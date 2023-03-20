@@ -119,7 +119,7 @@ static bool restart_trigger()
 
 static void mupgrade_version_fallback_task(void *arg)
 {
-    if (restart_trigger() && mupgrade_version_fallback() == MDF_OK) {
+    if (restart_trigger() && (mupgrade_version_fallback() == MDF_OK)) {
         esp_restart();
     }
 
@@ -139,8 +139,8 @@ __attribute((constructor)) mdf_err_t mupgrade_partition_switch()
 
 #ifdef CONFIG_MUPGRADE_VERSION_FALLBACK_RESTART
 
-    xTaskCreate(mupgrade_version_fallback_task, "mupgrade_version_fallback", 4 * 1024,
-                NULL, CONFIG_MDF_TASK_DEFAULT_PRIOTY + 5, NULL);
+    xTaskCreatePinnedToCore(mupgrade_version_fallback_task, "mupgrade_version_fallback", 4 * 1024,
+                NULL, CONFIG_MDF_TASK_DEFAULT_PRIOTY + 5, NULL, CONFIG_MDF_TASK_PINNED_TO_CORE);
 
 #endif /**< CONFIG_MUPGRADE_VERSION_FALLBACK_RESTART */
 

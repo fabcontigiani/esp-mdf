@@ -517,7 +517,7 @@ mdf_err_t mwifi_start()
 
     if (strlen(ap_config->mesh_password)) {
         memcpy(mesh_config.mesh_ap.password, ap_config->mesh_password, sizeof(mesh_config.mesh_ap.password));
-        ESP_ERROR_CHECK(esp_mesh_set_ap_authmode(WIFI_AUTH_WPA_PSK));
+        ESP_ERROR_CHECK(esp_mesh_set_ap_authmode(WIFI_AUTH_WPA2_PSK));
     } else {
         ESP_ERROR_CHECK(esp_mesh_set_ap_authmode(WIFI_AUTH_OPEN));
     }
