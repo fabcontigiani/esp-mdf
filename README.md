@@ -1,23 +1,18 @@
-# ESP-WIFI-MESH Development Framework [[中文]](./README_cn.md)
+# ESP-WIFI-MESH Development Framework
 
-[![Documentation Status](https://readthedocs.com/projects/espressif-esp-mdf/badge/?version=latest)](https://docs.espressif.com/projects/esp-mdf/en/latest/?badge=latest)
+## If you are looking for actively maintained repository for ESP-MDF, THIS IS NOT IT. There is none, unfortunatelly.
 
-ESP-MDF, or Espressif Mesh Development Framework, is a development framework for [ESP-WIFI-MESH](https://docs.espressif.com/projects/esp-idf/en/stable/api-guides/mesh.html), a networking protocol built on top of the Wi-Fi protocol. ESP-MDF is based on the [ESP32](https://www.espressif.com/en/products/hardware/esp32/overview) chip.
+### Matters need attention
 
-## Matters need attention
+1. This version of MDF is based on the ESP-MDF master branch (marked here as [v1.5-rc](https://github.com/mmrein/esp-mdf/releases/tag/v1.5-rc)) and is not recommended for product development. 
+1. ESP-MDF master branch is based on ESP-IDF v4.3.1 and seems reasonably stable with v4.4.1. Bugs are to be expected. 
+1. Documentation may reflect original state rather than current state
 
-1. This version of MDF is based on the IDF master branch and is not recommended for product development. If you need a stable version of MDF, please use branch release/v1.0.
-1. ESP-MDF master branch already supports ESP32S2, but some example can not build and run on ESP32S2 now. We will support these in the future. They are:
-    - function_demo/mconfig
-    - development_kit/buddy
-    - development_kit/button
-    - development_kit/light
-    - development_kit/sense
-    - wireless_debug
+----
 
 ## Overview
 
-ESP-MDF is based on the [ESP-WIFI-MESH](https://docs.espressif.com/projects/esp-idf/en/stable/api-guides/mesh.html) protocol stack to facilitate your development of ESP-WIFI-MESH. ESP-MDF provides the following features:
+ESP-MDF, or Espressif Mesh Development Framework, is a development framework for [ESP-WIFI-MESH](https://docs.espressif.com/projects/esp-idf/en/v4.3.1/esp32/api-guides/mesh.html), a networking protocol built on top of the Wi-Fi protocol. ESP-MDF is based on the [ESP32](https://www.espressif.com/en/products/hardware/esp32/overview) chip. ESP-MDF provides the following features:
 
 * **Fast network configuration**: In addition to manual configuration with the network configuration apps, such as ESP-WIFI-MESH App or similar third-party apps, ESP-MDF offers a chained way of network configuration, during which devices autonomously and quickly establish a network, and form a greater coverage area.
 
@@ -118,7 +113,7 @@ This section provides the steps for quick start with your development of ESP-MDF
 
 The directory ``~/esp`` will be used further to install the compiling toolchain, ESP-MDF and demo programs. You can use another directory, but make sure to modify the commands accordingly.
 
-1. [**Setup Toolchain**](https://docs.espressif.com/projects/esp-idf/en/stable/get-started-cmake/index.html#step-1-set-up-the-toolchain): please set up according to your PC's operating system ([Windows](https://docs.espressif.com/projects/esp-idf/en/stable/get-started-cmake/windows-setup.html), [Linux](https://docs.espressif.com/projects/esp-idf/en/stable/get-started-cmake/linux-setup.html) or [Mac OS](https://docs.espressif.com/projects/esp-idf/en/stable/get-started-cmake/macos-setup.html)). If you use linux, you can use this commands.
+1. [**Setup Toolchain**](https://docs.espressif.com/projects/esp-idf/en/v4.3.1/esp32/get-started/index.html#installation-step-by-step): please set up according to your PC's operating system. If you use linux, you can use following commands.
 
     ```shell
     git clone -b v4.3.1 --recursive https://github.com/espressif/esp-idf.git
@@ -130,12 +125,12 @@ The directory ``~/esp`` will be used further to install the compiling toolchain,
 1. **Get ESP-MDF**:
 
     ```shell
-    git clone --recursive https://github.com/espressif/esp-mdf.git
+    git clone --recursive https://github.com/mmrein/esp-mdf.git
     ```
 
     If you clone without the `--recursive` option, please navigate to the esp-mdf directory and run the command `git submodule update --init`
 
-1. **Set up ESP-MDF Path**: Toolchain uses the environment variable ``MDF_PATH`` to access ESP-MDF. The setup of this variable is similar to that of the variable ``IDF_PATH``. Please refer to [`Add IDF_PATH & idf.py PATH to User Profile`](https://docs.espressif.com/projects/esp-idf/en/v4.0.1/get-started/index.html#step-4-set-up-the-environment-variables). If you use linux, you can use this commands.
+1. **Set up ESP-MDF Path**: Toolchain uses the environment variable ``MDF_PATH`` to access ESP-MDF. The setup of this variable is similar to that of the variable ``IDF_PATH``. Please refer to [`Add IDF_PATH & idf.py PATH to User Profile`](https://docs.espressif.com/projects/esp-idf/en/v4.3.1/get-started/index.html#step-4-set-up-the-environment-variables). If you use linux, you can use this commands.
 
     ```shell
     cd ~/esp/esp-mdf
@@ -156,7 +151,7 @@ The directory ``~/esp`` will be used further to install the compiling toolchain,
     idf.py -p [port] -b [baudrate] erase_flash flash
     ```
 
-1. [**Monitor/Debugging**](https://docs.espressif.com/projects/esp-idf/en/stable/get-started/idf-monitor.html): If you want to exit the monitor, please use the shortcut key ``Ctrl+]``.
+1. [**Monitor/Debugging**](https://docs.espressif.com/projects/esp-idf/en/v4.3.1/esp32/api-guides/tools/idf-monitor.html): If you want to exit the monitor, please use the shortcut key ``Ctrl+]``.
 
     ```shell
     idf.py monitor
@@ -200,11 +195,10 @@ The directory ``~/esp`` will be used further to install the compiling toolchain,
 ## Related Documentation
 
 * For ESP-MDF related documents, please go to [ESP-MDF Programming Guide](https://docs.espressif.com/projects/esp-mdf/en/latest/?badge=latest).
-* [ESP-WIFI-MESH](https://docs.espressif.com/projects/esp-idf/en/stable/api-guides/mesh.html) is the basic wireless communication protocol for ESP-MDF.
-* [ESP-IDF Programming Guide](https://docs.espressif.com/projects/esp-idf/en/stable/) describes Espressif's IoT development framework.
+* [ESP-WIFI-MESH](https://docs.espressif.com/projects/esp-idf/en/v4.3.1/esp32/api-guides/mesh.html) is the basic wireless communication protocol for ESP-MDF.
+* [ESP-IDF Programming Guide](https://docs.espressif.com/projects/esp-idf/en/v4.4.1/) describes Espressif's IoT development framework.
 * To report a bug or request a function, please go to [Issues](https://github.com/espressif/esp-mdf/issues) on GitHub to submit them. Before submitting an issue, please check if it has already been covered.
 * If you want to contribute ESP-MDF related codes, please refer to [Code Contribution Guide](docs/en/contribute/index.rst).
 * To visit ESP32 official forum, please go to [ESP32 BBS](https://esp32.com/).
 * For the hardware documents related to ESP32-MeshKit, please visit [Espressif Website](https://www.espressif.com/en/support/download/documents).
-* ESP32-MeshKit-Light purchase link: [Taobao](https://item.taobao.com/item.htm?spm=a230r.1.14.1.55a83647K8jlrh&id=573310711489&ns=1&abbucket=3#detail).
-* ESP32-Buddy purchase link: Coming soon.
+
