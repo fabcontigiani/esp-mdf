@@ -74,3 +74,9 @@ examples/test
 .clangd
 .cache
 
+# Manual examples local build
+tools/idf-path.txt
+tools/build_all.sh
+
+
+
