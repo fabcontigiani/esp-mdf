@@ -31,6 +31,11 @@
 #include "esp32s2/rom/crc.h"
 #endif
 
+#ifdef CONFIG_IDF_TARGET_ESP32S3
+#include "esp32s3/rom/rtc.h"
+#include "esp32s3/rom/crc.h"
+#endif
+
 #ifdef CONFIG_IDF_TARGET_ESP32
 #include "esp32/rom/rtc.h"
 #include "esp32/rom/crc.h"
@@ -101,6 +106,7 @@ extern "C" {
  *
  * @return constant string from MDF_VER
  */
+//#define MDF_VER	"mdf-as-component"
 #define mdf_get_version()    MDF_VER
 
 #ifdef __cplusplus
