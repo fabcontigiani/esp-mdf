@@ -84,6 +84,7 @@ tools/idf-path.txt
 tools/build_all.sh
 
 # Testing stuff
+components/coap
 components/mdns
 
 
