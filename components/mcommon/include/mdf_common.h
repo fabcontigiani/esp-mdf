@@ -59,10 +59,11 @@
 
 #include "nvs.h"
 #include "nvs_flash.h"
-#include "cJSON.h"
-#include "driver/i2c.h"
 #include "sys/param.h"
-#include "driver/gpio.h"
+// Example specific, should not be here:
+//#include "cJSON.h"
+//#include "driver/i2c.h"
+//#include "driver/gpio.h"
 
 #include "mdf_err.h"
 #include "mdf_mem.h"
