@@ -558,7 +558,7 @@ mdf_err_t mwifi_stop()
 
     /**< To ensure that all tasks are properly exited */
     MDF_LOGD("vTaskDelay 50ms");
-    vTaskDelay(50 / portTICK_RATE_MS);
+    vTaskDelay(50 / portTICK_PERIOD_MS);
 
     MDF_ERROR_ASSERT(esp_wifi_set_mode(WIFI_MODE_STA));
 
@@ -1009,14 +1009,14 @@ mdf_err_t __mwifi_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
             MDF_LOGV("wait_ticks: %d, start_ticks: %d, recv_ticks: %d", wait_ticks, start_ticks, recv_ticks);
 
             /**< Receive a packet targeted to self over the mesh network */
-            ret = esp_mesh_recv((mesh_addr_t *)src_addr, &mesh_data, recv_ticks * portTICK_RATE_MS,
+            ret = esp_mesh_recv((mesh_addr_t *)src_addr, &mesh_data, recv_ticks * portTICK_PERIOD_MS,
                                 &data_flag, &mesh_opt, 1);
             MDF_LOGV("esp_mesh_recv, src_addr: " MACSTR ", size: %d, data: %.*s",
                      MAC2STR(src_addr), mesh_data.size, mesh_data.size, mesh_data.data);
 
             if (ret == ESP_ERR_MESH_NOT_START) {
                 MDF_LOGW("<ESP_ERR_MESH_NOT_START> Node failed to receive packets");
-                vTaskDelay(100 / portTICK_RATE_MS);
+                vTaskDelay(100 / portTICK_PERIOD_MS);
                 continue;
             } else if (ret == ESP_ERR_MESH_TIMEOUT) {
                 MDF_LOGD("<MDF_ERR_MWIFI_TIMEOUT> Node failed to receive packets");
@@ -1338,11 +1338,11 @@ mdf_err_t __mwifi_root_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
 
         /**< Receive a packet targeted to external IP network */
         ret = esp_mesh_recv_toDS((mesh_addr_t *)src_addr, &dest_addr,
-                                 &mesh_data, recv_ticks * portTICK_RATE_MS, &data_flag, &mesh_opt, 1);
+                                 &mesh_data, recv_ticks * portTICK_PERIOD_MS, &data_flag, &mesh_opt, 1);
 
         if (ret == ESP_ERR_MESH_NOT_START) {
             MDF_LOGW("<ESP_ERR_MESH_NOT_START> Node failed to receive packets");
-            vTaskDelay(100 / portTICK_RATE_MS);
+            vTaskDelay(100 / portTICK_PERIOD_MS);
             continue;
         } else if (ret == ESP_ERR_MESH_TIMEOUT) {
             MDF_LOGD("<MDF_ERR_MWIFI_TIMEOUT> Node failed to receive packets");

@@ -217,7 +217,7 @@ static mdf_err_t mupgrade_write(const mupgrade_packet_t *packet, size_t size)
                                   MUPGRADE_PACKET_MAX_NUM / 8, ESP_LOG_VERBOSE);
         MDF_LOGI("Write total_size: %d, written_size: %d, spend time: %ds",
                  g_upgrade_config->status.total_size, g_upgrade_config->status.written_size,
-                 (xTaskGetTickCount() - g_upgrade_config->start_time) * portTICK_RATE_MS / 1000);
+                 (xTaskGetTickCount() - g_upgrade_config->start_time) * portTICK_PERIOD_MS / 1000);
 
         /**< If ESP32 was reset duration OTA, and after restart, the update_handle will be invalid,
              but it still can switch boot partition and reboot successful */

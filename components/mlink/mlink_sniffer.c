@@ -32,7 +32,7 @@ typedef struct sniffer_data_list {
     mlink_sniffer_data_t data;
 } __attribute__((packed)) sniffer_data_list_t;
 
-#define sniffer_timestamp() (xTaskGetTickCount() * portTICK_RATE_MS)
+#define sniffer_timestamp() (xTaskGetTickCount() * portTICK_PERIOD_MS)
 
 static const char *TAG       = "mlink_sniffer";
 static void *g_sniffer_lock  = NULL;

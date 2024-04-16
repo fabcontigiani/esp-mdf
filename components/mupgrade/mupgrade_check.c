@@ -105,7 +105,7 @@ static bool restart_trigger()
     ret = mdf_info_save(MUPGRADE_STORE_RESTART_COUNT_KEY, &restart_count, sizeof(uint32_t));
     MDF_ERROR_CHECK(ret != ESP_OK, false, "Save the number of restarts within the set time");
 
-    timer = xTimerCreate("restart_count_erase", CONFIG_MUPGRADE_RESTART_TIMEOUT / portTICK_RATE_MS,
+    timer = xTimerCreate("restart_count_erase", CONFIG_MUPGRADE_RESTART_TIMEOUT / portTICK_PERIOD_MS,
                          false, NULL, restart_count_erase_timercb);
     MDF_ERROR_CHECK(!timer, false, "xTaskCreate, timer: %p", timer);
 

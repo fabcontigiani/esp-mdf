@@ -414,7 +414,7 @@ static int coredump_func(int argc, char **argv)
                     break;
                 }
 
-                vTaskDelay(100 / portTICK_RATE_MS);
+                vTaskDelay(100 / portTICK_PERIOD_MS);
             }
 
             MDF_ERROR_BREAK(ret != MDF_OK, "mdebug_espnow_write, seq: %d", packet->seq);
@@ -423,7 +423,7 @@ static int coredump_func(int argc, char **argv)
              * @brief TODO Since espnow is now an unreliable transmission,
              *             sending too fast will result in packet loss.
              */
-            vTaskDelay(20 / portTICK_RATE_MS);
+            vTaskDelay(20 / portTICK_PERIOD_MS);
         }
 
         packet->type = MDEBUG_COREDUMP_END;

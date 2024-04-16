@@ -1107,7 +1107,7 @@ mdf_err_t mconfig_blufi_init(const mconfig_blufi_config_t *cfg)
     ret = esp_bluedroid_enable();
     MDF_ERROR_CHECK(ret != ESP_OK, ret, "Enable bluedroid");
 
-    vTaskDelay(esp_random() % 100 / portTICK_RATE_MS);
+    vTaskDelay(esp_random() % 100 / portTICK_PERIOD_MS);
 
     ret = esp_ble_gap_register_callback(mconfig_blufi_gap_event_handler);
     MDF_ERROR_CHECK(ret != ESP_OK, ret, "BLE gap register callback");
