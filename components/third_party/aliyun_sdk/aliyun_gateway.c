@@ -727,7 +727,7 @@ static mdf_err_t aliyun_gateway_process(int type, uint8_t *src_addr, aliyun_buff
 }
 
 #ifdef CONFIG_ALIYUN_PLATFORM_MDF
-static void delay_refresh_handler(xTimerHandle xtimer)
+static void delay_refresh_handler(TimerHandle_t xtimer)
 {
     xSemaphoreGive(g_refresh_device_list_sepr);
 }
@@ -750,7 +750,7 @@ static void aliyun_gateway_read_task(void *arg)
     buffer->payload = buffer->data + CONFIG_ALIYUN_TOPIC_SIZE + 1;
 
 #ifdef CONFIG_ALIYUN_PLATFORM_MDF
-    xTimerHandle delay_refresh_timer = xTimerCreate("delay_refresh", pdMS_TO_TICKS(1000), false, NULL, delay_refresh_handler);
+    TimerHandle_t delay_refresh_timer = xTimerCreate("delay_refresh", pdMS_TO_TICKS(1000), false, NULL, delay_refresh_handler);
 #endif
 
     MDF_LOGI("aliyun_gateway_read_task is running");

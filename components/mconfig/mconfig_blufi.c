@@ -433,7 +433,7 @@ static void blufi_wifi_event_handler(void *arg, esp_event_base_t event_base, int
 }
 #else
 
-static void mconfig_stop_mesh_cb(xTimerHandle timer)
+static void mconfig_stop_mesh_cb(TimerHandle_t timer)
 {
     esp_mesh_stop();
     xTimerDelete(timer, 0);
@@ -518,7 +518,7 @@ static void blufi_mesh_event_handler(void *arg, esp_event_base_t event_base, int
                 ret = esp_ble_gap_disconnect(g_spp_remote_bda);
                 MDF_ERROR_BREAK(ret != ESP_OK, "<%s> esp_ble_gap_disconnect", mdf_err_to_name(ret));
 
-                xTimerHandle timer = xTimerCreate("stop_mesh", 1, pdFALSE, NULL, mconfig_stop_mesh_cb);
+                TimerHandle_t timer = xTimerCreate("stop_mesh", 1, pdFALSE, NULL, mconfig_stop_mesh_cb);
                 assert(xTimerStart(timer, 0) == pdPASS);
             }
 
@@ -532,7 +532,7 @@ static void blufi_mesh_event_handler(void *arg, esp_event_base_t event_base, int
             ret = esp_ble_gap_disconnect(g_spp_remote_bda);
             MDF_ERROR_BREAK(ret != ESP_OK, "<%s> esp_ble_gap_disconnect", mdf_err_to_name(ret));
 
-            xTimerHandle timer = xTimerCreate("stop_mesh", 1, pdFALSE, NULL, mconfig_stop_mesh_cb);
+            TimerHandle_t timer = xTimerCreate("stop_mesh", 1, pdFALSE, NULL, mconfig_stop_mesh_cb);
             assert(xTimerStart(timer, 0) == pdPASS);
         }
         break;

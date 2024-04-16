@@ -40,7 +40,7 @@ static mwifi_config_t *g_ap_config        = NULL;
 static mwifi_init_config_t *g_init_config = NULL;
 static bool g_rootless_flag                       = false;
 static mesh_event_toDS_state_t g_toDs_status_flag = false;
-static xTimerHandle g_waive_root_timer;
+static TimerHandle_t g_waive_root_timer;
 static int g_waive_root_interval                  = MWIFI_WAIVE_ROOT_INTERVAL; /**< Avoid frequent triggers waive root*/
 
 bool mwifi_is_started()
