@@ -79,7 +79,7 @@ void tcp_client_read_task(void *arg)
             g_sockfd = socket_tcp_client_create(CONFIG_SERVER_IP, CONFIG_SERVER_PORT);
 
             if (g_sockfd == -1) {
-                vTaskDelay(500 / portTICK_RATE_MS);
+                vTaskDelay(500 / portTICK_PERIOD_MS);
                 continue;
             }
         }
@@ -161,7 +161,7 @@ void tcp_client_write_task(void *arg)
 
     while (mwifi_is_started() && esp_mesh_is_root()) {
         if (g_sockfd == -1) {
-            vTaskDelay(500 / portTICK_RATE_MS);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
             continue;
         }
 
@@ -195,7 +195,7 @@ static void node_read_task(void *arg)
 
     for (;;) {
         if (!g_root_got_ip) {
-            vTaskDelay(500 / portTICK_RATE_MS);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
             continue;
         }
 
@@ -227,7 +227,7 @@ static void node_write_task(void *arg)
 
     for (;;) {
         if (!g_root_got_ip) {
-            vTaskDelay(500 / portTICK_RATE_MS);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
             continue;
         }
 
@@ -239,7 +239,7 @@ static void node_write_task(void *arg)
         MDF_FREE(data);
         MDF_ERROR_CONTINUE(ret != MDF_OK, "<%s> mwifi_write", mdf_err_to_name(ret));
 
-        vTaskDelay(3000 / portTICK_RATE_MS);
+        vTaskDelay(3000 / portTICK_PERIOD_MS);
     }
 
     MDF_FREE(data);
@@ -515,7 +515,7 @@ void app_main()
     xTaskCreate(node_read_task, "node_read_task", 4 * 1024,
                 NULL, CONFIG_MDF_TASK_DEFAULT_PRIOTY, NULL);
 
-    TimerHandle_t timer = xTimerCreate("print_system_info", 10000 / portTICK_RATE_MS,
+    TimerHandle_t timer = xTimerCreate("print_system_info", 10000 / portTICK_PERIOD_MS,
                                        true, NULL, print_system_info_timercb);
     xTimerStart(timer, 0);
 }

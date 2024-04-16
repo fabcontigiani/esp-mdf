@@ -43,7 +43,7 @@
 
 static const char company[] = "ESPRESSIF";
 static EventGroupHandle_t g_user_event;
-static xTimerHandle g_print_timer;
+static TimerHandle_t g_print_timer;
 static const char *TAG = "get_started";
 static const char identifier_freeheap[] = "FreeHeap";
 static const char identifier_periodic[] = "Periodic";
@@ -64,7 +64,7 @@ static mdf_err_t device_get_config_cb(uint32_t msg_id, int code, const char *dat
 static mdf_err_t device_config_push_cb(uint32_t msg_id, const char *data); // Cloud push configuration callback
 static mdf_err_t device_update_delete_info(char flag); //Device update or delete deviceinfo
 
-static void device_print_system_info(xTimerHandle timer);
+static void device_print_system_info(TimerHandle_t timer);
 
 static void event_handler(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
@@ -466,7 +466,7 @@ _exit:
     return ret;
 }
 
-static void device_print_system_info(xTimerHandle timer)
+static void device_print_system_info(TimerHandle_t timer)
 {
     static int32_t count = 0;
     static char format_time[32];

@@ -123,10 +123,10 @@ static void button_led_show_key_release()
         if (mdf_info_load(BUTTON_ESPNOW_CONFIG_STORE_KEY, &espnow_config,
                           sizeof(mlink_espnow_config_t)) != MDF_OK) {
             button_driver_led_blink_start(128, 128, 0, 100); /**< yellow blink */
-            vTaskDelay(300 / portTICK_RATE_MS);
+            vTaskDelay(300 / portTICK_PERIOD_MS);
         } else if (!mlink_trigger_is_exist()) {
             button_driver_led_set_rgb(128, 128, 0);          /**< yellow */
-            vTaskDelay(300 / portTICK_RATE_MS);
+            vTaskDelay(300 / portTICK_PERIOD_MS);
         } else {
             button_driver_led_set_rgb(0, 0, 0);              /**< off */
         }
@@ -296,7 +296,7 @@ static mdf_err_t event_loop_cb(mdf_event_loop_t event, void *ctx)
             MDF_ERROR_BREAK(ret != 0, "Erase the information");
 
             button_driver_led_set_rgb(255, 0, 0);          /**< red */
-            vTaskDelay(1000 / portTICK_RATE_MS);
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
             esp_restart();
             break;
 
@@ -419,7 +419,7 @@ static mdf_err_t button_mesh_mode()
     xTaskCreate(request_handle_task, "request_handle", 8 * 1024,
                 NULL, CONFIG_MDF_TASK_DEFAULT_PRIOTY, NULL);
 
-    TimerHandle_t timer = xTimerCreate("show_system_info", 10000 / portTICK_RATE_MS,
+    TimerHandle_t timer = xTimerCreate("show_system_info", 10000 / portTICK_PERIOD_MS,
                                        true, NULL, show_system_info_timercb);
     xTimerStart(timer, 0);
 
@@ -455,7 +455,7 @@ static mdf_err_t button_espnow_mode()
     for (int wait_ms = 100;; wait_ms = 5000) {
         EventBits_t uxBits = xEventGroupWaitBits(g_event_group_trigger,
                              EVENT_GROUP_BUTTON_KEY_LONG_PUSH | EVENT_GROUP_BUTTON_KEY_RELEASE | EVENT_GROUP_BUTTON_KEY_SHORT_PUSH,
-                             pdTRUE, pdFALSE, wait_ms / portTICK_RATE_MS);
+                             pdTRUE, pdFALSE, wait_ms / portTICK_PERIOD_MS);
         MDF_ERROR_CHECK(!uxBits, MDF_ERR_TIMEOUT, "xEventGroupWaitBits");
 
         if (uxBits & EVENT_GROUP_BUTTON_KEY_SHORT_PUSH) {
@@ -481,7 +481,7 @@ static mdf_err_t button_espnow_mode()
                      MAC2STR(dest_addr), CONFIG_NETWORK_FILTER_RSSI, 30000);
 
 
-            mdf_event_loop_delay_send(MDF_EVENT_MLINK_SYSTEM_REBOOT, NULL, 15000 / portTICK_RATE_MS);
+            mdf_event_loop_delay_send(MDF_EVENT_MLINK_SYSTEM_REBOOT, NULL, 15000 / portTICK_PERIOD_MS);
 
             for (uint8_t channel = 1; channel < 13; channel++) {
                 memset(dest_addr, 0x0, 6);
@@ -546,11 +546,11 @@ static mdf_err_t button_espnow_mode()
             MDF_ERROR_ASSERT(mwifi_start());
             EventBits_t uxBits = xEventGroupWaitBits(g_event_group_trigger,
                                  EVENT_GROUP_BUTTON_MESH_CONNECTED,
-                                 pdTRUE, pdFALSE, 10000 / portTICK_RATE_MS);
+                                 pdTRUE, pdFALSE, 10000 / portTICK_PERIOD_MS);
             MDF_ERROR_CHECK(!uxBits, MDF_ERR_TIMEOUT, "xEventGroupWaitBits");
 
             xEventGroupWaitBits(g_event_group_trigger, EVENT_GROUP_BUTTON_KEY_RELEASE,
-                                pdTRUE, pdFALSE, 5000 / portTICK_RATE_MS);
+                                pdTRUE, pdFALSE, 5000 / portTICK_PERIOD_MS);
             MDF_ERROR_ASSERT(mwifi_deinit());
         } else if (mlink_trigger_handle(MLINK_COMMUNICATE_ESPNOW) != MDF_OK) {
             MDF_LOGW("Data transmission failed");
@@ -571,7 +571,7 @@ static mdf_err_t button_espnow_mode()
                 MDF_ERROR_ASSERT(mwifi_start());
                 EventBits_t uxBits = xEventGroupWaitBits(g_event_group_trigger,
                                      EVENT_GROUP_BUTTON_MESH_CONNECTED,
-                                     pdTRUE, pdFALSE, 15000 / portTICK_RATE_MS);
+                                     pdTRUE, pdFALSE, 15000 / portTICK_PERIOD_MS);
                 MDF_ERROR_CHECK(!uxBits, MDF_ERR_TIMEOUT, "xEventGroupWaitBits");
                 MDF_ERROR_ASSERT(mwifi_deinit());
             }

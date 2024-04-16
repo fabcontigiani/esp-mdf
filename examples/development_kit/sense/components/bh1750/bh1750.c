@@ -63,7 +63,7 @@ esp_err_t iot_bh1750_power_down(bh1750_handle_t sensor)
     i2c_master_write_byte(cmd, (sens->dev_addr << 1) | WRITE_BIT, ACK_CHECK_EN);
     i2c_master_write_byte(cmd, BH1750_POWER_DOWN, ACK_CHECK_EN);
     i2c_master_stop(cmd);
-    int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_RATE_MS);
+    int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
     return ret;
 }
@@ -76,7 +76,7 @@ esp_err_t iot_bh1750_power_on(bh1750_handle_t sensor)
     i2c_master_write_byte(cmd, (sens->dev_addr) << 1 | WRITE_BIT, ACK_CHECK_EN);
     i2c_master_write_byte(cmd, BH1750_POWER_ON, ACK_CHECK_EN);
     i2c_master_stop(cmd);
-    int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_RATE_MS);
+    int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
     return ret;
 }
@@ -90,7 +90,7 @@ esp_err_t iot_bh1750_reset_data_register(bh1750_handle_t sensor)
     i2c_master_write_byte(cmd, (sens->dev_addr << 1) | WRITE_BIT, ACK_CHECK_EN);
     i2c_master_write_byte(cmd, BH1750_DATA_REG_RESET, ACK_CHECK_EN);
     i2c_master_stop(cmd);
-    int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_RATE_MS);
+    int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
     return ret;
 }
@@ -109,7 +109,7 @@ esp_err_t iot_bh1750_change_measure_time(bh1750_handle_t sensor, uint8_t measure
         i2c_master_write_byte(cmd, (sens->dev_addr << 1) | WRITE_BIT, ACK_CHECK_EN);
         i2c_master_write_byte(cmd, buf[i], ACK_CHECK_EN);
         i2c_master_stop(cmd);
-        int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_RATE_MS);
+        int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_PERIOD_MS);
         i2c_cmd_link_delete(cmd);
 
         if (ret == ESP_FAIL) {
@@ -128,7 +128,7 @@ esp_err_t iot_bh1750_set_measure_mode(bh1750_handle_t sensor, bh1750_cmd_measure
     i2c_master_write_byte(cmd, (sens->dev_addr << 1) | WRITE_BIT, ACK_CHECK_EN);
     i2c_master_write_byte(cmd, cmd_measure, ACK_CHECK_EN);
     i2c_master_stop(cmd);
-    int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_RATE_MS);
+    int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
     return ret;
 }
@@ -143,7 +143,7 @@ esp_err_t iot_bh1750_get_data(bh1750_handle_t sensor, float *data)
     i2c_master_read_byte(cmd, &bh1750_data_h, ACK_VAL);
     i2c_master_read_byte(cmd, &bh1750_data_l, NACK_VAL);
     i2c_master_stop(cmd);
-    int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_RATE_MS);
+    int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
 
     if (ret == ESP_FAIL) {
@@ -163,7 +163,7 @@ esp_err_t iot_bh1750_get_light_intensity(bh1750_handle_t sensor, bh1750_cmd_meas
     i2c_master_write_byte(cmd, (sens->dev_addr << 1) | WRITE_BIT, ACK_CHECK_EN);
     i2c_master_write_byte(cmd, cmd_measure, ACK_CHECK_EN);
     i2c_master_stop(cmd);
-    int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_RATE_MS);
+    int ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
 
     if (ret != ESP_OK) {
@@ -171,9 +171,9 @@ esp_err_t iot_bh1750_get_light_intensity(bh1750_handle_t sensor, bh1750_cmd_meas
     }
 
     if ((cmd_measure == BH1750_CONTINUE_4LX_RES) || (cmd_measure == BH1750_ONETIME_4LX_RES)) {
-        vTaskDelay(30 / portTICK_RATE_MS);
+        vTaskDelay(30 / portTICK_PERIOD_MS);
     } else {
-        vTaskDelay(180 / portTICK_RATE_MS);
+        vTaskDelay(180 / portTICK_PERIOD_MS);
     }
 
     cmd = i2c_cmd_link_create();
@@ -182,7 +182,7 @@ esp_err_t iot_bh1750_get_light_intensity(bh1750_handle_t sensor, bh1750_cmd_meas
     i2c_master_read_byte(cmd, &bh1750_data_h, ACK_VAL);
     i2c_master_read_byte(cmd, &bh1750_data_l, NACK_VAL);
     i2c_master_stop(cmd);
-    ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_RATE_MS);
+    ret = iot_i2c_bus_cmd_begin(sens->bus, cmd, 1000 / portTICK_PERIOD_MS);
     i2c_cmd_link_delete(cmd);
 
     if (ret != ESP_OK) {

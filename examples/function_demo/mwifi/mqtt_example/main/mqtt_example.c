@@ -33,7 +33,7 @@ void root_write_task(void *arg)
 
     while (esp_mesh_is_root()) {
         if (!mwifi_get_root_status()) {
-            vTaskDelay(500 / portTICK_RATE_MS);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
             continue;
         }
 
@@ -64,7 +64,7 @@ void root_read_task(void *arg)
 
     while (esp_mesh_is_root()) {
         if (!mwifi_get_root_status()) {
-            vTaskDelay(500 / portTICK_RATE_MS);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
             continue;
         }
 
@@ -106,7 +106,7 @@ static void node_read_task(void *arg)
 
     for (;;) {
         if (!mwifi_is_connected()) {
-            vTaskDelay(500 / portTICK_RATE_MS);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
             continue;
         }
 
@@ -137,7 +137,7 @@ static void node_write_task(void *arg)
 
     for (;;) {
         if (!mwifi_is_connected() || !mwifi_get_root_status()) {
-            vTaskDelay(500 / portTICK_RATE_MS);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
             continue;
         }
 
@@ -153,7 +153,7 @@ static void node_write_task(void *arg)
         MDF_FREE(data);
         MDF_ERROR_CONTINUE(ret != MDF_OK, "<%s> mwifi_write", mdf_err_to_name(ret));
 
-        vTaskDelay(3000 / portTICK_RATE_MS);
+        vTaskDelay(3000 / portTICK_PERIOD_MS);
     }
 
     MDF_LOGW("Node task is exit");
@@ -345,7 +345,7 @@ void app_main()
     xTaskCreate(node_read_task, "node_read_task", 4 * 1024,
                 NULL, CONFIG_MDF_TASK_DEFAULT_PRIOTY, NULL);
 
-    TimerHandle_t timer = xTimerCreate("print_system_info", 10000 / portTICK_RATE_MS,
+    TimerHandle_t timer = xTimerCreate("print_system_info", 10000 / portTICK_PERIOD_MS,
                                        true, NULL, print_system_info_timercb);
     xTimerStart(timer, 0);
 }

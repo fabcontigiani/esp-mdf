@@ -63,7 +63,7 @@ int restart_count_get()
     ret = mdf_info_save(DEVICE_STORE_RESTART_COUNT_KEY, &restart_count, sizeof(uint32_t));
     MDF_ERROR_CHECK(ret != ESP_OK, ret, "Save the number of restarts within the set time");
 
-    timer = xTimerCreate("restart_count_erase", DEVICE_RESTART_TIMEOUT_MS / portTICK_RATE_MS,
+    timer = xTimerCreate("restart_count_erase", DEVICE_RESTART_TIMEOUT_MS / portTICK_PERIOD_MS,
                          false, NULL, restart_count_erase_timercb);
     MDF_ERROR_CHECK(!timer, ret, "xTaskCreate, timer: %p", timer);
 
@@ -216,7 +216,7 @@ mdf_err_t get_network_config(mwifi_init_config_t *init_config, mwifi_config_t *a
                      i, MAC2STR((uint8_t *)mconfig_data->whitelist_data + i * sizeof(mconfig_whitelist_t)));
         }
 
-        MDF_ERROR_ASSERT(mconfig_chain_master(mconfig_data, DEVICE_MASTER_NETWORK_CONFIG_DURATION_MS / portTICK_RATE_MS));
+        MDF_ERROR_ASSERT(mconfig_chain_master(mconfig_data, DEVICE_MASTER_NETWORK_CONFIG_DURATION_MS / portTICK_PERIOD_MS));
     }
 
     MDF_FREE(mconfig_data);

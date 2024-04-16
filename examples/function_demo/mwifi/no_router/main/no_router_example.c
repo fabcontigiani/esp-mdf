@@ -142,7 +142,7 @@ static void node_read_task(void *arg)
 
     for (;;) {
         if (!mwifi_is_connected() && !(mwifi_is_started() && esp_mesh_is_root())) {
-            vTaskDelay(500 / portTICK_RATE_MS);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
             continue;
         }
 
@@ -307,7 +307,7 @@ void app_main()
                 NULL, CONFIG_MDF_TASK_DEFAULT_PRIOTY, NULL);
 
     /* Periodic print system information */
-    TimerHandle_t timer = xTimerCreate("print_system_info", 10000 / portTICK_RATE_MS,
+    TimerHandle_t timer = xTimerCreate("print_system_info", 10000 / portTICK_PERIOD_MS,
                                        true, NULL, print_system_info_timercb);
     xTimerStart(timer, 0);
 

@@ -60,7 +60,7 @@ void bh1750_test_task(void *pvParameters)
         iot_bh1750_power_on(sens);
         cmd_measure = BH1750_ONETIME_4LX_RES;
         iot_bh1750_set_measure_mode(sens, cmd_measure);
-        vTaskDelay(30 / portTICK_RATE_MS);
+        vTaskDelay(30 / portTICK_PERIOD_MS);
         ret = iot_bh1750_get_data(sens, &bh1750_data);
 
         if (ret == ESP_OK) {
@@ -71,7 +71,7 @@ void bh1750_test_task(void *pvParameters)
 
         cmd_measure = BH1750_CONTINUE_4LX_RES;
         iot_bh1750_set_measure_mode(sens, cmd_measure);
-        vTaskDelay(30 / portTICK_RATE_MS);
+        vTaskDelay(30 / portTICK_PERIOD_MS);
         ret = iot_bh1750_get_data(sens, &bh1750_data);
 
         if (ret == ESP_OK) {
@@ -80,7 +80,7 @@ void bh1750_test_task(void *pvParameters)
             printf("No ack, sensor not connected...\n");
         }
 
-        vTaskDelay(1000 / portTICK_RATE_MS);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 
     iot_bh1750_delete(sens, true);

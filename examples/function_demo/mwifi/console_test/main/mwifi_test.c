@@ -408,12 +408,12 @@ static void mesh_iperf_client_task(void *arg)
     };
 
     TickType_t start_ticks = xTaskGetTickCount();
-    TickType_t end_ticks   = start_ticks + g_mesh_iperf_cfg.transmit_time * 1000 * portTICK_RATE_MS;
+    TickType_t end_ticks   = start_ticks + g_mesh_iperf_cfg.transmit_time * 1000 * portTICK_PERIOD_MS;
     uint32_t total_count   = 0;
 
     MDF_LOGI("[    Server MAC   ] Interval       Transfer     Bandwidth");
 
-    for (uint32_t report_ticks = start_ticks + g_mesh_iperf_cfg.report_interval * 1000 / portTICK_RATE_MS, report_count = 0;
+    for (uint32_t report_ticks = start_ticks + g_mesh_iperf_cfg.report_interval * 1000 / portTICK_PERIOD_MS, report_count = 0;
             xTaskGetTickCount() < end_ticks && !g_mesh_iperf_cfg.finish; ++total_count) {
         ret = mwifi_write(g_mesh_iperf_cfg.addr, &data_type, buffer,
                           g_mesh_iperf_cfg.packet_len, true);
@@ -421,28 +421,28 @@ static void mesh_iperf_client_task(void *arg)
         data_type.custom++;
 
         if (xTaskGetTickCount() >= report_ticks) {
-            uint32_t report_timer = (report_ticks - start_ticks) * portTICK_RATE_MS / 1000;
+            uint32_t report_timer = (report_ticks - start_ticks) * portTICK_PERIOD_MS / 1000;
             double report_size    = (data_type.custom - report_count) * g_mesh_iperf_cfg.packet_len / 1e6;
 
             MDF_LOGI("["MACSTR"]  %2d-%2d sec  %2.2f MBytes  %0.2f Mbits/sec",
                      MAC2STR(g_mesh_iperf_cfg.addr), report_timer - g_mesh_iperf_cfg.report_interval, report_timer,
                      report_size, report_size * 8 / g_mesh_iperf_cfg.report_interval);
 
-            report_ticks = xTaskGetTickCount() + g_mesh_iperf_cfg.report_interval * 1000 / portTICK_RATE_MS;
+            report_ticks = xTaskGetTickCount() + g_mesh_iperf_cfg.report_interval * 1000 / portTICK_PERIOD_MS;
             report_count = data_type.custom;
         }
     }
 
     data_type.protocol  = IPERF_BANDWIDTH_STOP;
     int retry_count     = 3;
-    uint32_t spend_time = (xTaskGetTickCount() - start_ticks) * portTICK_RATE_MS;
+    uint32_t spend_time = (xTaskGetTickCount() - start_ticks) * portTICK_PERIOD_MS;
 
     do {
         ret = mwifi_write(g_mesh_iperf_cfg.addr, &data_type, buffer, 1, true);
         MDF_ERROR_CONTINUE(ret != MDF_OK, "<%s> mwifi_write", mdf_err_to_name(ret));
 
         size_t buffer_len = g_mesh_iperf_cfg.packet_len;
-        ret = mwifi_read(g_mesh_iperf_cfg.addr, &data_type, buffer, &buffer_len, 3000 / portTICK_RATE_MS);
+        ret = mwifi_read(g_mesh_iperf_cfg.addr, &data_type, buffer, &buffer_len, 3000 / portTICK_PERIOD_MS);
     } while (ret != MDF_OK && retry_count-- > 0);
 
     if (ret != MDF_OK) {
@@ -481,7 +481,7 @@ static void mesh_iperf_server_task(void *arg)
     for (uint32_t report_ticks = 0, report_count = 0;
             !g_mesh_iperf_cfg.finish;) {
         ret = mwifi_read(g_mesh_iperf_cfg.addr, &data_type, &buffer,
-                         &buffer_len, 100 / portTICK_RATE_MS);
+                         &buffer_len, 100 / portTICK_PERIOD_MS);
 
         if (ret == MDF_ERR_MWIFI_TIMEOUT || ret == ESP_ERR_MESH_TIMEOUT) {
             continue;
@@ -496,17 +496,17 @@ static void mesh_iperf_server_task(void *arg)
         if (data_type.custom == 0) {
             recv_count   = 0;
             start_ticks  = xTaskGetTickCount();
-            report_ticks = start_ticks + g_mesh_iperf_cfg.report_interval * 1000 / portTICK_RATE_MS;
+            report_ticks = start_ticks + g_mesh_iperf_cfg.report_interval * 1000 / portTICK_PERIOD_MS;
         }
 
         if (data_type.protocol == IPERF_BANDWIDTH && xTaskGetTickCount() >= report_ticks) {
-            uint32_t report_timer = (report_ticks - start_ticks) * portTICK_RATE_MS / 1000;
+            uint32_t report_timer = (report_ticks - start_ticks) * portTICK_PERIOD_MS / 1000;
             double report_size    = (data_type.custom - report_count) * g_mesh_iperf_cfg.packet_len / 1e6;
             MDF_LOGI("["MACSTR"]  %2d-%2d sec  %2.2f MBytes  %0.2f Mbits/sec",
                      MAC2STR(g_mesh_iperf_cfg.addr), report_timer - g_mesh_iperf_cfg.report_interval, report_timer,
                      report_size, report_size * 8 / g_mesh_iperf_cfg.report_interval);
 
-            report_ticks = xTaskGetTickCount() + g_mesh_iperf_cfg.report_interval * 1000 / portTICK_RATE_MS;
+            report_ticks = xTaskGetTickCount() + g_mesh_iperf_cfg.report_interval * 1000 / portTICK_PERIOD_MS;
             report_count = data_type.custom;
         } else if (data_type.protocol == IPERF_PING) {
             MDF_LOGV("recv IPERF_PING, seq: %d, recv_count: %d", data_type.custom, recv_count);
@@ -517,7 +517,7 @@ static void mesh_iperf_server_task(void *arg)
             uint32_t total_count = data_type.custom;
             uint32_t lost_count  = total_count - recv_count;
             double total_len     = (total_count * g_mesh_iperf_cfg.packet_len) / 1e6;
-            uint32_t spend_time  = (xTaskGetTickCount() - start_ticks) * portTICK_RATE_MS;
+            uint32_t spend_time  = (xTaskGetTickCount() - start_ticks) * portTICK_PERIOD_MS;
 
             MDF_LOGI("[ ID] Interval      Transfer       Bandwidth      Jitter   Lost/Total Datagrams");
             MDF_LOGI("[000] %2d-%2d sec    %2.2f MBytes    %0.2f Mbits/sec    %d ms    %d/%d (%d%%)",
@@ -568,7 +568,7 @@ static void mesh_iperf_ping_task(void *arg)
         MDF_ERROR_CONTINUE(ret != MDF_OK, "<%s> mwifi_write", mdf_err_to_name(ret));
 
         do {
-            ret = mwifi_read(src_addr, &data_type, &recv_data, &recv_size, 20000 / portTICK_RATE_MS);
+            ret = mwifi_read(src_addr, &data_type, &recv_data, &recv_size, 20000 / portTICK_PERIOD_MS);
 
             if (ret == MDF_OK && (data_type.protocol != IPERF_PING || data_type.custom != seq)) {
                 MDF_LOGW("data_size: %d", recv_size);

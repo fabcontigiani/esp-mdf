@@ -58,7 +58,7 @@ extern "C" void ssd1306_obj_test()
     ssd1306_show_signs(ssd1306.get_dev_handle());
     while (1) {
         ssd1306_show_time(ssd1306.get_dev_handle());
-        vTaskDelay(100 / portTICK_RATE_MS);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
     printf("heap: %d\n", esp_get_free_heap_size());
 }

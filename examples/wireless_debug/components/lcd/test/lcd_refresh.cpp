@@ -66,7 +66,7 @@ extern "C" void app_lcd_task(void *clk_freq)
 
     time = xTaskGetTickCount();
     while (true) {
-        if((xTaskGetTickCount() - time) > 1000 / portTICK_RATE_MS ) {
+        if((xTaskGetTickCount() - time) > 1000 / portTICK_PERIOD_MS ) {
            ESP_LOGI(TAG, "clk_freq: %d MHz, LCD refresh %d fps", *((uint8_t *)clk_freq), i);
            time = xTaskGetTickCount();
            i = 0;

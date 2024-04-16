@@ -127,7 +127,7 @@ static void node_write_task(void *arg)
 
     for (;;) {
         if (!mwifi_is_connected() || mdebug_flash_size() < MWIFI_PAYLOAD_LEN) {
-            vTaskDelay(500 / portTICK_RATE_MS);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
             continue;
         }
 

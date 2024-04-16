@@ -34,7 +34,7 @@
 static const char *TAG = "aliyu_mesh";
 
 static const char company[] = "ESPRESSIF";
-static xTimerHandle g_print_timer;
+static TimerHandle_t g_print_timer;
 static const char identifier_freeheap[] = "FreeHeap";
 static const char identifier_periodic[] = "Periodic";
 static TaskHandle_t g_usertask_handle = NULL;
@@ -62,7 +62,7 @@ static mdf_err_t device_update_delete_info(char flag); //Device update or delete
 static mdf_err_t device_add_reply_cb(aliyun_device_reply_t *reply);
 static mdf_err_t device_delete_reply_cb(aliyun_device_reply_t *reply);
 
-static void device_print_system_info(xTimerHandle timer);
+static void device_print_system_info(TimerHandle_t timer);
 
 static mdf_err_t wifi_init()
 {
@@ -515,7 +515,7 @@ static mdf_err_t device_delete_reply_cb(aliyun_device_reply_t *reply)
     return MDF_OK;
 }
 
-static void device_print_system_info(xTimerHandle timer)
+static void device_print_system_info(TimerHandle_t timer)
 {
     static struct {
         uint32_t free_heap;

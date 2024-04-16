@@ -248,7 +248,7 @@ extern "C" mdf_err_t debug_recv_init()
                             NULL, CONFIG_MDF_TASK_DEFAULT_PRIOTY,
                             NULL, CONFIG_MDF_TASK_PINNED_TO_CORE);
 
-    TimerHandle_t timer = xTimerCreate("print_system_info", 1000 / portTICK_RATE_MS,
+    TimerHandle_t timer = xTimerCreate("print_system_info", 1000 / portTICK_PERIOD_MS,
                                        true, NULL, print_system_info_timercb);
     xTimerStart(timer, 0);
 

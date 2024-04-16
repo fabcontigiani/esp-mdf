@@ -332,7 +332,7 @@ extern "C" mdf_err_t debug_recv_init()
     /** lcd initialize */
     lcd_initialize();
 
-    TimerHandle_t timer = xTimerCreate("print_system_info", 1000 / portTICK_RATE_MS,
+    TimerHandle_t timer = xTimerCreate("print_system_info", 1000 / portTICK_PERIOD_MS,
                                        true, NULL, print_system_info_timercb);
     xTimerStart(timer, 0);
 

@@ -80,7 +80,7 @@ void hts221_test_task(void *pvParameters)
         iot_hts221_get_temperature(hts221, &temperature);
         printf("temperature value is: %2.2f\n", (float)temperature / 10);
         printf("**************************************************\n");
-        vTaskDelay(1000 / portTICK_RATE_MS);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
         printf("heap: %d\n", esp_get_free_heap_size());
     }
 }
@@ -88,7 +88,7 @@ void hts221_test_task(void *pvParameters)
 void hts221_test()
 {
     i2c_sensor_hts221_init();
-    vTaskDelay(1000 / portTICK_RATE_MS);
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
     xTaskCreate(hts221_test_task, "hts221_test_task", 1024 * 2, NULL, 10, NULL);
 }
 

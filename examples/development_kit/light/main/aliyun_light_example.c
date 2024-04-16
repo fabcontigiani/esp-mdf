@@ -234,7 +234,7 @@ static void aliyun_user_task(void *arg)
         MDF_LOGI("light_post_property_cloud, ret: %d", ret);
 
         while (! aliyun_subdevice_get_login_status()) {
-            vTaskDelay(3000 / portTICK_RATE_MS);
+            vTaskDelay(3000 / portTICK_PERIOD_MS);
         }
 
         MDF_LOGI("aliyun subdevice connect error");
@@ -441,7 +441,7 @@ void app_main()
     MDF_ERROR_ASSERT(mwifi_start());
 
     MDF_LOGW("esp_get_free_heap_size: %d",  esp_get_free_heap_size());
-    TimerHandle_t timer = xTimerCreate("update_system_info", 10000 / portTICK_RATE_MS,
+    TimerHandle_t timer = xTimerCreate("update_system_info", 10000 / portTICK_PERIOD_MS,
                                        true, NULL, show_system_info_timercb);
     xTimerStart(timer, 0);
 }
