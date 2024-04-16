@@ -31,7 +31,22 @@
 #include "mbedtls/dhm.h"
 #include "mbedtls/md5.h"
 #include "mbedtls/sha256.h"
+
+#ifdef CONFIG_IDF_TARGET_ESP32C3
+#include "esp32c3/rom/crc.h"
+#endif
+
+#ifdef CONFIG_IDF_TARGET_ESP32S2
+#include "esp32s2/rom/crc.h"
+#endif
+
+#ifdef CONFIG_IDF_TARGET_ESP32S3
+#include "esp32s3/rom/crc.h"
+#endif
+
+#ifdef CONFIG_IDF_TARGET_ESP32
 #include "esp32/rom/crc.h"
+#endif
 
 #include "mdf_common.h"
 #include "mdf_event_loop.h"
