@@ -20,7 +20,7 @@
 #include "mwifi.h"
 
 static struct mesh_mqtt {
-    xQueueHandle queue; /**< mqtt receive data queue */
+    QueueHandle_t queue; /**< mqtt receive data queue */
     esp_mqtt_client_handle_t client; /**< mqtt client */
     bool is_connected;
     uint8_t addr[MWIFI_ADDR_LEN];

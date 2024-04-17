@@ -20,7 +20,7 @@ typedef struct {
     void *ctx;
 } mdf_event_loop_data_t;
 
-static xQueueHandle g_event_queue_handle      = NULL;
+static QueueHandle_t g_event_queue_handle      = NULL;
 static TaskHandle_t g_event_task_handle       = NULL;
 static mdf_event_loop_cb_t g_event_handler_cb = NULL;
 static const char *TAG                        = "mdf_event_loop";

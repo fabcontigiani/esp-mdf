@@ -67,7 +67,7 @@ enum light_channel {
 };
 
 static const char *TAG                    = "button_driver";
-static xQueueHandle g_event_queue         = NULL;
+static QueueHandle_t g_event_queue         = NULL;
 static light_handle_t g_button_led_handle = NULL;
 static bool g_button_led_blink_flag       = false;
 static button_key_t g_button_key[BUTTON_KEY_NUM]               = {0x0};

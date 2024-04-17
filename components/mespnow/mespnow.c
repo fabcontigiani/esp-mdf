@@ -85,7 +85,7 @@ static bool g_espnow_init_flag                             = false;
 static const uint8_t g_oui[MESPNOW_OUI_LEN]                = {0x4E, 0x4F}; /**< 'N', 'O' */
 
 static EventGroupHandle_t g_event_group                    = NULL;
-static xQueueHandle g_espnow_queue[MESPNOW_TRANS_PIPE_MAX] = {NULL};
+static QueueHandle_t g_espnow_queue[MESPNOW_TRANS_PIPE_MAX] = {NULL};
 static uint8_t g_espnow_queue_size[MESPNOW_TRANS_PIPE_MAX] = {CONFIG_MESPNOW_TRANS_PIPE_DEBUG_QUEUE_SIZE,
                                                               CONFIG_MESPNOW_TRANS_PIPE_CONTROL_QUEUE_SIZE,
                                                               CONFIG_MESPNOW_TRANS_PIPE_MCONFIG_QUEUE_SIZE,
@@ -117,7 +117,7 @@ static void mespnow_recv_cb(const uint8_t *addr, const uint8_t *data, int size)
     }
 
     mespnow_head_data_t *espnow_data = (mespnow_head_data_t *)data;
-    xQueueHandle espnow_queue       = NULL;
+    QueueHandle_t espnow_queue       = NULL;
 
     if (espnow_data->pipe >= MESPNOW_TRANS_PIPE_MAX) {
         MDF_LOGD("Device pipe error");
@@ -326,7 +326,7 @@ mdf_err_t mespnow_read(mespnow_trans_pipe_e pipe, uint8_t *src_addr,
     /**
      * @brief Receive data packet from special queue
      */
-    xQueueHandle espnow_queue       = g_espnow_queue[pipe];
+    QueueHandle_t espnow_queue       = g_espnow_queue[pipe];
     uint32_t start_ticks            = xTaskGetTickCount();
     ssize_t read_size               = 0;
     size_t total_size               = 0;
