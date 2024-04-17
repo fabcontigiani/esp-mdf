@@ -97,7 +97,7 @@ static bool restart_trigger()
     } else {
         mdf_info_load(MUPGRADE_STORE_RESTART_COUNT_KEY, &restart_count, &restart_count_lenght);
         restart_count++;
-        MDF_LOGW("restart reason: %d, count: %d", reset_reason, restart_count);
+        MDF_LOGW("restart reason: %d, count: %"PRIu32, reset_reason, restart_count);
     }
 
     /**< If the device restarts within the instruction time,

@@ -15,6 +15,7 @@
 #ifndef __MDF_ERR_H__
 #define __MDF_ERR_H__
 
+#include <inttypes.h>
 #include "esp_err.h"
 #include "esp_log.h"
 
@@ -72,7 +73,7 @@ const char *mdf_err_to_name(mdf_err_t code);
 #endif /**< CONFIG_MDF_LOG_LEVEL */
 #define MDF_LOG_LEVEL CONFIG_MDF_LOG_LEVEL
 
-#define MDF_LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%u) [%s, %d]: " format LOG_RESET_COLOR "\n"
+#define MDF_LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%"PRIu32") [%s, %d]: " format LOG_RESET_COLOR "\n"
 
 #define MDF_LOGE( format, ... ) do { \
         if (MDF_LOG_LEVEL >= ESP_LOG_ERROR) { \

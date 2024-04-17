@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <inttypes.h>
 #include "mwifi.h"
 #include "miniz.h"
 
@@ -133,7 +134,7 @@ static mdf_err_t mwifi_waive_root_timer_create(void)
 
 static void esp_ip_event_cb(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
-    MDF_LOGD("esp_ip_event_cb event_id: %d", event_id);
+    MDF_LOGD("esp_ip_event_cb event_id: %"PRIi32, event_id);
     static mesh_event_info_t s_event_info = { 0 };
 
     /**< Send event to the event handler */
@@ -165,7 +166,7 @@ static void esp_ip_event_cb(void *arg, esp_event_base_t event_base, int32_t even
 
 static void esp_mesh_event_cb(void *arg, esp_event_base_t event_base, int32_t event_id, void *event_data)
 {
-    MDF_LOGD("esp_mesh_event_cb event_id: %d", event_id);
+    MDF_LOGD("esp_mesh_event_cb event_id: %"PRIi32, event_id);
     static int s_disconnected_count = 0;
     static mesh_event_info_t s_evet_info[MWIFI_EVET_INFO_SIZE] = { 0 };
     static int evet_info_index = 0;
@@ -238,7 +239,7 @@ static void esp_mesh_event_cb(void *arg, esp_event_base_t event_base, int32_t ev
 
         case MESH_EVENT_ROUTING_TABLE_ADD: {
             mesh_event_routing_table_change_t *routing_table = (mesh_event_routing_table_change_t *)event_data;
-            MDF_LOGI("Routing table is changed by adding newly joined children add_num: %d, total_num: %d",
+            MDF_LOGI("Routing table is changed by adding newly joined children add_num: %u, total_num: %u",
                      routing_table->rt_size_change,
                      routing_table->rt_size_new);
             g_waive_root_interval = MWIFI_WAIVE_ROOT_INTERVAL;
@@ -247,7 +248,7 @@ static void esp_mesh_event_cb(void *arg, esp_event_base_t event_base, int32_t ev
 
         case MESH_EVENT_ROUTING_TABLE_REMOVE: {
             mesh_event_routing_table_change_t *routing_table = (mesh_event_routing_table_change_t *)event_data;
-            MDF_LOGI("Routing table is changed by removing leave children remove_num: %d, total_num: %d",
+            MDF_LOGI("Routing table is changed by removing leave children remove_num: %u, total_num: %u",
                      routing_table->rt_size_change,
                      routing_table->rt_size_new);
             break;
@@ -339,7 +340,7 @@ void mwifi_print_config()
     MDF_LOGI("vote_max_count        : %d", attempts.vote);
     MDF_LOGI("backoff_rssi          : %d", switch_parent.backoff_rssi);
     MDF_LOGI("scan_min_count        : %d", attempts.scan);
-    MDF_LOGI("attempt_count         : %d", attempts.fail);
+    MDF_LOGI("attempt_count         : %u", attempts.fail);
     MDF_LOGI("monitor_ie_count      : %d", attempts.monitor_ie);
     MDF_LOGI("root_healing_ms       : %d", esp_mesh_get_root_healing_delay());
     MDF_LOGI("root_conflicts_enable : %s", bool_str[esp_mesh_is_root_conflicts_allowed()]);
@@ -347,14 +348,14 @@ void mwifi_print_config()
 
     MDF_LOGI("****************  Capacity   ****************");
     MDF_LOGI("max_layer             : %d", esp_mesh_get_max_layer());
-    MDF_LOGI("max_connection        : %d", cfg.mesh_ap.max_connection);
+    MDF_LOGI("max_connection        : %u", cfg.mesh_ap.max_connection);
     MDF_LOGI("capacity_num          : %d", esp_mesh_get_capacity_num());
     MDF_LOGI("topology              : %d", esp_mesh_get_topology());
 
     MDF_LOGI("****************  Stability  ****************");
     MDF_LOGI("assoc_expire_ms       : %d", esp_mesh_get_ap_assoc_expire() * 1000);
     ESP_ERROR_CHECK(esp_mesh_get_beacon_interval(&beacon_interval));
-    MDF_LOGI("beacon_interval_ms    : %d", beacon_interval);
+    MDF_LOGI("beacon_interval_ms    : %u", beacon_interval);
     MDF_LOGI("passive_scan_ms       : %d", esp_mesh_get_passive_scan_time());
     MDF_LOGI("monitor_duration_ms   : %d", switch_parent.duration_ms);
     MDF_LOGI("cnx_rssi              : %d", switch_parent.cnx_rssi);
@@ -376,7 +377,7 @@ void mwifi_print_config()
     MDF_LOGI("mesh_id               : " MACSTR, MAC2STR(cfg.mesh_id.addr));
     MDF_LOGI("mesh_password         : %s", cfg.mesh_ap.password);
     MDF_LOGI("mesh_authmode         : %d", esp_mesh_get_ap_authmode());
-    MDF_LOGI("channel               : %d", cfg.channel);
+    MDF_LOGI("channel               : %u", cfg.channel);
     MDF_LOGI("allow_router_switch   : %s", bool_str[cfg.router.allow_router_switch]);
     MDF_LOGI("allow_channel_switch  : %s", bool_str[cfg.allow_channel_switch]);
 }
@@ -703,7 +704,7 @@ static mdf_err_t mwifi_subcontract_write(const mesh_addr_t *dest_addr, const mes
         xSemaphoreGive(s_mwifi_send_lock);
         MDF_ERROR_CHECK(ret != ESP_OK && !(flag & MESH_DATA_GROUP && ret == ESP_ERR_MESH_DISCARD), ret,
                         "Node failed to send packets, dest_addr: " MACSTR
-                        ", flag: 0x%02x, opt->type: 0x%02x, opt->len: %d, data->tos: %d, data: %p, size: %d",
+                        ", flag: 0x%02x, opt->type: 0x%02x, opt->len: %u, data->tos: %d, data: %p, size: %u",
                         MAC2STR(dest_addr->addr), flag, opt->type, opt->len, mesh_data.tos, mesh_data.data, mesh_data.size);
 
         data_head->packet_seq++;
@@ -797,7 +798,7 @@ MEM_FREE:
                 tmp_data.data = mesh_data->data;
             }
 
-            MDF_LOGV("mesh_data->size: %d, transmit_num: %d, child_addr: " MACSTR,
+            MDF_LOGV("mesh_data->size: %u, transmit_num: %d, child_addr: " MACSTR,
                      mesh_data->size, data_head->transmit_num, MAC2STR(child_addr->addr));
 
             /**< Fragmenting packets for transmission */
@@ -906,7 +907,7 @@ mdf_err_t mwifi_write(const uint8_t *dest_addrs, const mwifi_data_type_t *data_t
         }
     }
 
-    MDF_LOGD("esp_mesh_send dest_addr: " MACSTR ", mesh_data.size: %d, data: %.*s",
+    MDF_LOGD("esp_mesh_send dest_addr: " MACSTR ", mesh_data.size: %u, data: %.*s",
              MAC2STR(dest_addrs), mesh_data.size, mesh_data.size, mesh_data.data);
 
     /**
@@ -1006,12 +1007,12 @@ mdf_err_t __mwifi_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
                              xTaskGetTickCount() - start_ticks < wait_ticks ?
                              wait_ticks - (xTaskGetTickCount() - start_ticks) : 0;
 
-            MDF_LOGV("wait_ticks: %d, start_ticks: %d, recv_ticks: %d", wait_ticks, start_ticks, recv_ticks);
+            MDF_LOGV("wait_ticks: %"PRIu32", start_ticks: %"PRIu32", recv_ticks: %d", wait_ticks, start_ticks, recv_ticks);
 
             /**< Receive a packet targeted to self over the mesh network */
             ret = esp_mesh_recv((mesh_addr_t *)src_addr, &mesh_data, recv_ticks * portTICK_PERIOD_MS,
                                 &data_flag, &mesh_opt, 1);
-            MDF_LOGV("esp_mesh_recv, src_addr: " MACSTR ", size: %d, data: %.*s",
+            MDF_LOGV("esp_mesh_recv, src_addr: " MACSTR ", size: %u, data: %.*s",
                      MAC2STR(src_addr), mesh_data.size, mesh_data.size, mesh_data.data);
 
             if (ret == ESP_ERR_MESH_NOT_START) {
@@ -1030,7 +1031,7 @@ mdf_err_t __mwifi_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
              * @brief Discard this packet if there is a packet loss in the middle
              */
             if (data_head.packet_seq != expect_seq) {
-                MDF_LOGW("Part of the packet is lost, expect_seq: %d, recv_seq: %d",
+                MDF_LOGW("Part of the packet is lost, expect_seq: %d, recv_seq: %u",
                          expect_seq, data_head.packet_seq);
 
                 recv_size  = 0;
@@ -1048,7 +1049,7 @@ mdf_err_t __mwifi_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
              */
             if (data_head.magic == s_data_magic) {
                 expect_seq--;
-                MDF_LOGD("Received duplicate packets, sequence: %d", s_data_magic);
+                MDF_LOGD("Received duplicate packets, sequence: %"PRIu32, s_data_magic);
                 continue;
             }
 
@@ -1080,13 +1081,13 @@ mdf_err_t __mwifi_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
                 mesh_data.size = recv_size - data_head.transmit_num * MWIFI_ADDR_LEN;
             }
 
-            MDF_LOGV("Data forwarding, size: %d, recv_size: %d, flag: %d, transmit_num: %d, data: %.*s",
+            MDF_LOGV("Data forwarding, size: %u, recv_size: %d, flag: %d, transmit_num: %d, data: %.*s",
                      mesh_data.size, recv_size, data_flag, data_head.transmit_num, mesh_data.size, mesh_data.data);
 
             /**< Multicast forwarding */
             ret = mwifi_transmit_write(transmit_addr, transmit_num, &mesh_data,
                                        data_flag, &mesh_opt);
-            MDF_ERROR_GOTO(ret != MDF_OK, EXIT, "<%s> mwifi_root_write, size: %d",
+            MDF_ERROR_GOTO(ret != MDF_OK, EXIT, "<%s> mwifi_root_write, size: %u",
                            mdf_err_to_name(ret), mesh_data.size);
         }
 
@@ -1131,14 +1132,14 @@ mdf_err_t __mwifi_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
 
             if (mz_ret != MZ_OK) {
                 ret = MDF_FAIL;
-                MDF_LOGW("<%s> Uncompress, size: %d", mz_error(mz_ret), mesh_data.size);
+                MDF_LOGW("<%s> Uncompress, size: %u", mz_error(mz_ret), mesh_data.size);
                 MDF_FREE(*((uint8_t **)data));
                 goto EXIT;
             }
         } else {
             mz_ret = uncompress((uint8_t *)data, (mz_ulong *)size, mesh_data.data, mesh_data.size);
             ret = (mz_ret == MZ_BUF_ERROR) ? MDF_ERR_BUF : MDF_FAIL;
-            MDF_ERROR_GOTO(mz_ret != MZ_OK, EXIT, "<%s> Uncompress, size: %d", mz_error(mz_ret), mesh_data.size);
+            MDF_ERROR_GOTO(mz_ret != MZ_OK, EXIT, "<%s> Uncompress, size: %u", mz_error(mz_ret), mesh_data.size);
         }
     } else {
         if (type == MWIFI_DATA_MEMORY_MALLOC_INTERNAL) {
@@ -1148,7 +1149,7 @@ mdf_err_t __mwifi_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
         } else {
             ret = (*size < mesh_data.size) ? MDF_ERR_BUF : MDF_FAIL;
             MDF_ERROR_GOTO(*size < mesh_data.size, EXIT,
-                           "Buffer is too small, size: %d, the expected size is: %d", *size, mesh_data.size);
+                           "Buffer is too small, size: %d, the expected size is: %u", *size, mesh_data.size);
             *size = mesh_data.size;
             memcpy(data, mesh_data.data, mesh_data.size);
         }
@@ -1201,7 +1202,7 @@ mdf_err_t mwifi_root_write(const uint8_t *addrs_list, size_t addrs_num,
      */
     if (data_head.type.group && data_type->communicate != MWIFI_COMMUNICATE_BROADCAST) {
         for (int i = 0; i < addrs_num; ++i) {
-            MDF_LOGD("count: %d, dest_addr: " MACSTR ", mesh_data.size: %d, data: %.*s",
+            MDF_LOGD("count: %d, dest_addr: " MACSTR ", mesh_data.size: %u, data: %.*s",
                      i, MAC2STR(addrs_list + 6 * i), mesh_data.size, mesh_data.size, mesh_data.data);
             ret = mwifi_write(addrs_list + 6 * i, data_type, data, size, block);
             MDF_ERROR_BREAK(ret != ESP_OK, "<%s> Root node failed to send packets, dest_mac: " MACSTR,
@@ -1261,7 +1262,7 @@ mdf_err_t mwifi_root_write(const uint8_t *addrs_list, size_t addrs_num,
          * @brief Send each device by p2p
          */
         for (int i = 0; i < addrs_num; ++i) {
-            MDF_LOGD("count: %d, dest_addr: " MACSTR" mesh_data.size: %d, data: %.*s",
+            MDF_LOGD("count: %d, dest_addr: " MACSTR" mesh_data.size: %u, data: %.*s",
                      i, MAC2STR(addrs_list + 6 * i), mesh_data.size, mesh_data.size, mesh_data.data);
 
             /**< Fragmenting packets for transmission */
@@ -1274,7 +1275,7 @@ mdf_err_t mwifi_root_write(const uint8_t *addrs_list, size_t addrs_num,
         tmp_addrs = MDF_MALLOC(addrs_num * sizeof(mesh_addr_t));
         MDF_ERROR_GOTO(!tmp_addrs, EXIT, "");
         memcpy(tmp_addrs, addrs_list, addrs_num * sizeof(mesh_addr_t));
-        MDF_LOGD("addrs_num: %d, addrs_list: " MACSTR ", mesh_data.size: %d",
+        MDF_LOGD("addrs_num: %d, addrs_list: " MACSTR ", mesh_data.size: %u",
                  addrs_num, MAC2STR(tmp_addrs), mesh_data.size);
 
         /**< Multicast forwarding */
@@ -1334,7 +1335,7 @@ mdf_err_t __mwifi_root_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
                          xTaskGetTickCount() - start_ticks < wait_ticks ?
                          wait_ticks - (xTaskGetTickCount() - start_ticks) : 0;
 
-        MDF_LOGV("wait_ticks: %d, start_ticks: %d, recv_ticks: %d", wait_ticks, start_ticks, recv_ticks);
+        MDF_LOGV("wait_ticks: %"PRIu32", start_ticks: %"PRIu32", recv_ticks: %d", wait_ticks, start_ticks, recv_ticks);
 
         /**< Receive a packet targeted to external IP network */
         ret = esp_mesh_recv_toDS((mesh_addr_t *)src_addr, &dest_addr,
@@ -1355,7 +1356,7 @@ mdf_err_t __mwifi_root_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
          * @brief Discard this packet if there is a packet loss in the middle
          */
         if (data_head.packet_seq != expect_seq) {
-            MDF_LOGW("Part of the packet is lost, expect_seq: %d, recv_seq: %d",
+            MDF_LOGW("Part of the packet is lost, expect_seq: %d, recv_seq: %u",
                      expect_seq, data_head.packet_seq);
 
             recv_size  = 0;

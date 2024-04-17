@@ -44,9 +44,9 @@ mdf_err_t mupgrade_firmware_init(const char *name, size_t size)
     MDF_ERROR_CHECK(size != OTA_SIZE_UNKNOWN && size > update->size,
                     MDF_ERR_INVALID_ARG, "The size of the firmware is wrong");
 
-    MDF_LOGI("Running partition, label: %s, type: 0x%x, subtype: 0x%x, address: 0x%x",
+    MDF_LOGI("Running partition, label: %s, type: 0x%x, subtype: 0x%x, address: 0x%"PRIx32,
              running->label, running->type, running->subtype, running->address);
-    MDF_LOGI("Update partition, label: %s, type: 0x%x, subtype: 0x%x, address: 0x%x",
+    MDF_LOGI("Update partition, label: %s, type: 0x%x, subtype: 0x%x, address: 0x%"PRIx32,
              update->label, update->type, update->subtype, update->address);
 
     if (!g_upgrade_config) {
