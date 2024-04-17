@@ -648,7 +648,7 @@ static void mconfig_ble_connect_timer_delete(void)
     }
 }
 
-static void mconfig_ble_connect_timercb(void *timer)
+static void mconfig_ble_connect_timercb(TimerHandle_t timer)
 {
     if (!g_connect_timer) {
         MDF_LOGW("Timer has been deleted");

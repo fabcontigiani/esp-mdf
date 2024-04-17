@@ -156,7 +156,7 @@ static void mlink_connection_remove(mlink_connection_t *mlink_conn)
     }
 }
 
-static void mlink_connection_timeout_cb(void *timer)
+static void mlink_connection_timeout_cb(TimerHandle_t timer)
 {
     char *chunk_footer             = "0\r\n\r\n";
     mlink_connection_t *mlink_conn = (mlink_connection_t *)pvTimerGetTimerID(timer);

@@ -170,7 +170,7 @@ static void node_read_task(void *arg)
 /**
  * @brief printing system information
  */
-static void print_system_info_timercb(void *timer)
+static void print_system_info_timercb(TimerHandle_t timer)
 {
     uint8_t primary                 = 0;
     wifi_second_chan_t second       = 0;

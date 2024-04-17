@@ -141,7 +141,7 @@ static mdf_err_t lcd_initialize()
     return MDF_OK;
 }
 
-void print_system_info_timercb(void *timer)
+void print_system_info_timercb(TimerHandle_t timer)
 {
     char *buffer = NULL;
     int count = 0;

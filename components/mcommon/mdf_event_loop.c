@@ -85,7 +85,7 @@ mdf_err_t mdf_event_loop_send(mdf_event_loop_t event, void *ctx)
     return MDF_OK;
 }
 
-static void event_send_timer_cb(void *timer)
+static void event_send_timer_cb(TimerHandle_t timer)
 {
     mdf_event_loop_data_t *event_data = (mdf_event_loop_data_t *)pvTimerGetTimerID(timer);
 

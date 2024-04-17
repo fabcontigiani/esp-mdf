@@ -338,7 +338,7 @@ static mdf_err_t get_network_config(mwifi_init_config_t *init_config, mwifi_conf
 /**
  * @brief Timed printing system information
  */
-static void show_system_info_timercb(void *timer)
+static void show_system_info_timercb(TimerHandle_t timer)
 {
     uint8_t primary                 = 0;
     wifi_second_chan_t second       = 0;

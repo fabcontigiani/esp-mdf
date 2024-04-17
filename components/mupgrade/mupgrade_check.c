@@ -69,7 +69,7 @@ mdf_err_t mupgrade_version_fallback()
 
 #ifdef CONFIG_MUPGRADE_VERSION_FALLBACK_RESTART
 
-static void restart_count_erase_timercb(void *timer)
+static void restart_count_erase_timercb(TimerHandle_t timer)
 {
     if (!xTimerStop(timer, portMAX_DELAY)) {
         MDF_LOGE("xTimerStop timer: %p", timer);

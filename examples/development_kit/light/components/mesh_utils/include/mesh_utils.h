@@ -34,7 +34,7 @@ extern "C" {
  * @return
  *     - NULL
  */
-void restart_count_erase_timercb(void *timer);
+void restart_count_erase_timercb(TimerHandle_t timer);
 
 /**
  * @brief Get restart count.
@@ -69,7 +69,7 @@ mdf_err_t wifi_init();
  * @return
  *     - NULL
  */
-__attribute__((weak)) void show_system_info_timercb(void *timer);
+__attribute__((weak)) void show_system_info_timercb(TimerHandle_t timer);
 
 /**
  * @brief   1.Get Mwifi initialization configuration information and Mwifi AP configuration information

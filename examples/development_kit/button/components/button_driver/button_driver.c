@@ -184,7 +184,7 @@ uint8_t button_battery_get_electricity()
     return electricity;
 }
 
-static void button_is_charging_timercb(void *timer)
+static void button_is_charging_timercb(TimerHandle_t timer)
 {
     if (!button_usb_is_connected()) {
         mdf_event_loop_send(MDF_EVENT_BUTTON_CHARGING_STOPED, NULL);

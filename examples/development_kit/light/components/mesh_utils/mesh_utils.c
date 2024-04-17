@@ -24,7 +24,7 @@
 
 static const char *TAG = "mesh_utils";
 
-void restart_count_erase_timercb(void *timer)
+void restart_count_erase_timercb(TimerHandle_t timer)
 {
     if (!xTimerStop(timer, portMAX_DELAY)) {
         MDF_LOGE("xTimerStop timer: %p", timer);
@@ -127,7 +127,7 @@ mdf_err_t wifi_init()
 /**
  * @brief Periodically print system information.
  */
-void show_system_info_timercb(void *timer)
+void show_system_info_timercb(TimerHandle_t timer)
 {
     uint8_t primary                 = 0;
     wifi_second_chan_t second       = 0;

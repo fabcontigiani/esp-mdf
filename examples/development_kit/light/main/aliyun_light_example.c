@@ -316,7 +316,7 @@ static mdf_err_t event_loop_cb(mdf_event_loop_t event, void *ctx)
 /**
  * @brief Periodically print system information.
  */
-void show_system_info_timercb(void *timer)
+void show_system_info_timercb(TimerHandle_t timer)
 {
     uint8_t primary                 = 0;
     wifi_second_chan_t second       = 0;

@@ -96,7 +96,7 @@ static esp_err_t log_analysis(const uint8_t *mac, const uint8_t *data)
     return ESP_OK;
 }
 
-void print_system_info_timercb(void *timer)
+void print_system_info_timercb(TimerHandle_t timer)
 {
     char *buffer = NULL;
     int count = 0;
