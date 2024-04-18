@@ -14,7 +14,9 @@
 
 #include <inttypes.h>
 #include "mwifi.h"
+#ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
 #include "miniz.h"
+#endif
 
 #define MWIFI_WAIVE_ROOT_INTERVAL  3 /**< When the root rssi is weak, MWIFI_WAIVE_ROOT_INTERVAL minutes will initiate a re root node selection */
 #define MWIFI_EVET_INFO_SIZE 3
@@ -850,7 +852,9 @@ mdf_err_t mwifi_write(const uint8_t *dest_addrs, const mwifi_data_type_t *data_t
 
     mdf_err_t ret          = MDF_OK;
     int data_flag          = 0;
+#ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
     mz_ulong compress_size = 0;
+#endif
     uint8_t *compress_data = NULL;
     uint8_t root_addr[]    = MWIFI_ADDR_ROOT;
     uint8_t empty_addr[]   = MWIFI_ADDR_NONE;
@@ -914,6 +918,7 @@ mdf_err_t mwifi_write(const uint8_t *dest_addrs, const mwifi_data_type_t *data_t
      * @brief data compression
      */
     if (data_head.type.compression) {
+#ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
         ret = MDF_ERR_NO_MEM;
         compress_size = compressBound(size);
         compress_data = MDF_MALLOC(compress_size);
@@ -931,6 +936,10 @@ mdf_err_t mwifi_write(const uint8_t *dest_addrs, const mwifi_data_type_t *data_t
             mesh_data.data = compress_data;
             mesh_data.size = compress_size;
         }
+#else
+        ESP_LOGE(TAG, "'Disable Miniz component includes' is set in Mcommon component. " \
+        		"Untick the option and add 'miniz' to project REQUIRES cmakelists if you want to use miniz compression.");
+#endif
     }
 
     /**< Send a package as a group */
@@ -1117,6 +1126,7 @@ mdf_err_t __mwifi_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
     memcpy(data_type, &data_head.type, sizeof(mwifi_data_type_t));
 
     if (data_type->compression) {
+#ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
         int mz_ret  = MZ_OK;
         int mz_rate = data_head.compress_rate;
 
@@ -1141,6 +1151,10 @@ mdf_err_t __mwifi_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
             ret = (mz_ret == MZ_BUF_ERROR) ? MDF_ERR_BUF : MDF_FAIL;
             MDF_ERROR_GOTO(mz_ret != MZ_OK, EXIT, "<%s> Uncompress, size: %u", mz_error(mz_ret), mesh_data.size);
         }
+#else
+        ESP_LOGE(TAG, "'Disable Miniz component includes' is set in Mcommon component. " \
+        		"Untick the option and add 'miniz' to project REQUIRES cmakelists if you want to use miniz compression.");
+#endif
     } else {
         if (type == MWIFI_DATA_MEMORY_MALLOC_INTERNAL) {
             *size = mesh_data.size;
@@ -1216,6 +1230,7 @@ mdf_err_t mwifi_root_write(const uint8_t *addrs_list, size_t addrs_num,
      * @brief data compression
      */
     if (data_head.type.compression) {
+#ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
         ret = MDF_ERR_NO_MEM;
         mz_ulong compress_size = compressBound(size);
         compress_data = MDF_MALLOC(compress_size);
@@ -1234,6 +1249,10 @@ mdf_err_t mwifi_root_write(const uint8_t *addrs_list, size_t addrs_num,
             mesh_data.size = compress_size;
             data_head.compress_rate = (size / compress_size + 1) >= 15 ? 15 : (size / compress_size + 1);
         }
+#else
+        ESP_LOGE(TAG, "'Disable Miniz component includes' is set in Mcommon component. " \
+        		"Untick the option and add 'miniz' to project REQUIRES cmakelists if you want to use miniz compression.");
+#endif
     }
 
     if (data_type->communicate == MWIFI_COMMUNICATE_UNICAST) {
@@ -1377,6 +1396,7 @@ mdf_err_t __mwifi_root_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
     memcpy(data_type, &data_head.type, sizeof(mwifi_data_type_t));
 
     if (data_type->compression) {
+#ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
         int mz_ret  = MZ_OK;
         int mz_rate = data_head.compress_rate;
 
@@ -1401,6 +1421,10 @@ mdf_err_t __mwifi_root_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
             ret = (mz_ret == MZ_BUF_ERROR) ? MDF_ERR_BUF : MDF_FAIL;
             MDF_ERROR_GOTO(mz_ret != MZ_OK, EXIT, "<%s> Uncompress, size: %d", mz_error(mz_ret), recv_size);
         }
+#else
+        ESP_LOGE(TAG, "'Disable Miniz component includes' is set in Mcommon component. " \
+        		"Untick the option and add 'miniz' to project REQUIRES cmakelists if you want to use miniz compression.");
+#endif
     } else {
         if (type == MWIFI_DATA_MEMORY_MALLOC_INTERNAL) {
             *size = recv_size;

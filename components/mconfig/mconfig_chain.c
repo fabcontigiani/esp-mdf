@@ -13,7 +13,9 @@
 // limitations under the License.
 
 #include "esp_wifi.h"
+#ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
 #include "miniz.h"
+#endif
 #include "mbedtls/md5.h"
 #include "mbedtls/aes.h"
 
@@ -240,11 +242,15 @@ static void mconfig_chain_master_task(void *arg)
 #ifdef CONFIG_MCONFIG_WHITELIST_ENABLE
 
         int retry_count = MCONFIG_CHAIN_SEND_RETRY_NUM;
-        uint8_t *whitelist_compress_data = NULL;
         ESP_ERROR_CHECK(mespnow_add_peer(ESP_IF_WIFI_AP, src_addr, (uint8_t *)CONFIG_MCONFIG_CHAIN_LMK));
+
+#ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
+
+        uint8_t *whitelist_compress_data = NULL;
 
         do {
             /**< Compression date to improve transmission efficiency */
+
             mz_ulong whitelist_compress_size = compressBound(mconfig_data->whitelist_size);
             whitelist_compress_data          = MDF_CALLOC(1, (int)whitelist_compress_size);
             MDF_ERROR_CONTINUE(!whitelist_compress_data, "");
@@ -255,6 +261,7 @@ static void mconfig_chain_master_task(void *arg)
 
             aes_iv_offset = 0;
             memcpy(aes_iv, MCONFIG_AES_CFB_IV, MCONFIG_AES_KEY_LEN);
+
             mbedtls_aes_crypt_cfb128(&aes_ctx, MBEDTLS_AES_ENCRYPT, whitelist_compress_size,
                                      &aes_iv_offset, aes_iv, whitelist_compress_data,
                                      whitelist_compress_data);
@@ -266,6 +273,23 @@ static void mconfig_chain_master_task(void *arg)
         } while (0);
 
         MDF_FREE(whitelist_compress_data);
+#else
+        do {
+            /**< No compression - not tested */
+
+            aes_iv_offset = 0;
+            memcpy(aes_iv, MCONFIG_AES_CFB_IV, MCONFIG_AES_KEY_LEN);
+            mbedtls_aes_crypt_cfb128(&aes_ctx, MBEDTLS_AES_ENCRYPT, mconfig_data->whitelist_size,
+                                     &aes_iv_offset, aes_iv, (uint8_t *)mconfig_data->whitelist_data,
+                                     (uint8_t *)mconfig_data->whitelist_data);
+            do {
+                ret = mespnow_write(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, mconfig_data->whitelist_data,
+                                    mconfig_data->whitelist_size, portMAX_DELAY);
+            } while (ret != ESP_OK && --retry_count);
+        } while (0);
+
+#endif
+
         ESP_ERROR_CHECK(mespnow_del_peer(src_addr));
 
         if (ret != ESP_OK) {
@@ -458,17 +482,23 @@ static void mconfig_chain_slave_task(void *arg)
 
         int retry_count                  = MCONFIG_CHAIN_SEND_RETRY_NUM;
         mconfig_data_t *mconfig_data     = &chain_data->mconfig_data;
+#ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
         mz_ulong whitelist_size          = mconfig_data->whitelist_size;
         mz_ulong whitelist_compress_size = 0;
         uint8_t *whitelist_compress_data = MDF_MALLOC(mconfig_data->whitelist_size + 64);
-        uint8_t src_addr[ESP_NOW_ETH_ALEN] = {0};
         MDF_ERROR_CONTINUE(!whitelist_compress_data, "");
+#endif
+        uint8_t src_addr[ESP_NOW_ETH_ALEN] = {0};
 
         do {
+#ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
             whitelist_compress_size = mconfig_data->whitelist_size + 64;
             ret = mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, whitelist_compress_data,
                                (size_t *)&whitelist_compress_size, 10000 / portTICK_PERIOD_MS);
-
+#else
+            ret = mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, mconfig_data->whitelist_data,
+                               (uint16_t *)&mconfig_data->whitelist_size, 10000 / portTICK_PERIOD_MS);
+#endif
             if (ret == MDF_ERR_TIMEOUT) {
                 break;
             }
@@ -477,13 +507,16 @@ static void mconfig_chain_slave_task(void *arg)
         ESP_ERROR_CHECK(mespnow_del_peer(dest_addr));
 
         if (ret != ESP_OK) {
+#ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
             MDF_FREE(whitelist_compress_data);
+#endif
             MDF_LOGD("<%s> Failed to receive whitelist", mdf_err_to_name(ret));
             continue;
         }
 
         aes_iv_offset = 0;
         memcpy(aes_iv, MCONFIG_AES_CFB_IV, MCONFIG_AES_KEY_LEN);
+#ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
         mbedtls_aes_crypt_cfb128(&aes_ctx, MBEDTLS_AES_DECRYPT, whitelist_compress_size,
                                  &aes_iv_offset, aes_iv, whitelist_compress_data, whitelist_compress_data);
 
@@ -494,6 +527,10 @@ static void mconfig_chain_slave_task(void *arg)
         MDF_FREE(whitelist_compress_data);
         MDF_ERROR_CONTINUE(ret != MZ_OK, "<%s> Failed to uncompress whitelist, whitelist_size: %d, src_addr: " MACSTR ", dest_addr: " MACSTR,
                            mz_error(ret), (int)whitelist_compress_size,  MAC2STR(src_addr), MAC2STR(dest_addr));
+#else
+        mbedtls_aes_crypt_cfb128(&aes_ctx, MBEDTLS_AES_DECRYPT, mconfig_data->whitelist_size,
+                                 &aes_iv_offset, aes_iv, mconfig_data->whitelist_data, mconfig_data->whitelist_data);
+#endif
 
 #endif /**< CONFIG_MCONFIG_WHITELIST_ENABLE */
 
