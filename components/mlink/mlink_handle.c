@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <inttypes.h>
 #include "mlink.h"
 #include "mwifi.h"
 #include "mconfig_chain.h"
@@ -278,7 +279,7 @@ static mdf_err_t mlink_handle_get_info(mlink_handle_data_t *handle_data)
         mlink_json_pack(&handle_data->resp_data, "position", position);
     }
 
-    sprintf(tmp_str, "%d", g_device_info->tid);
+    sprintf(tmp_str, "%"PRIu32, g_device_info->tid);
     esp_mesh_get_parent_bssid(&parent_bssid);
 
     if (esp_mesh_get_layer() == MESH_ROOT) {

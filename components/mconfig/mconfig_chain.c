@@ -154,7 +154,7 @@ static void mconfig_chain_master_task(void *arg)
     mdf_event_loop_send(MDF_EVENT_MCONFIG_CHAIN_MASTER_STARTED, NULL);
     mbedtls_aes_init(&aes_ctx);
 
-    MDF_LOGD("g_chain_master_duration_ticks: %d", g_chain_master_duration_ticks);
+    MDF_LOGD("g_chain_master_duration_ticks: %"PRIu32, g_chain_master_duration_ticks);
 
     while ((xTaskGetTickCount() - start_ticks) < g_chain_master_duration_ticks) {
         /**
