@@ -13,11 +13,11 @@ CYAN='\033[0;36m'
 WHITE='\033[0;37m'
 
 source ./idf-path.txt
-# Contents of tools/idf-path.txt can be as simple as following line (without the octothorpe):
+# Contents of tools/idf-path.txt can be as simple as following 2 lines (without the octothorpe):
 #export IDF_PATH=/path/to/your/local/esp-idf
+#export MDF_PATH=/path/to/your/local/esp-mdf
 
 source "$IDF_PATH/export.sh"
-export MDF_PATH=../
 
 # 1. All basic examples for all supported targets
 
