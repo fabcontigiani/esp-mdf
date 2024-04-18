@@ -15,6 +15,15 @@
 #ifndef __MDF_COMMON_H__
 #define __MDF_COMMON_H__
 
+#include "esp_idf_version.h"
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+#define IDF_V5
+#elif ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 0, 0)
+#define IDF_V4
+#else
+#error "Obsolete ESP-IDF version, unsupported"
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
