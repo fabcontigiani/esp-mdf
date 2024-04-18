@@ -482,7 +482,7 @@ static void mlink_ota_send_task(void *arg)
     if (ret != MDF_OK) {
         MDF_LOGW("<%s> Root sends firmware to other nodes", mdf_err_to_name(ret));
     } else {
-        MDF_LOGI("Firmware is sent to the device to complete, Spend time: %ds",
+        MDF_LOGI("Firmware is sent to the device to complete, Spend time: %"PRIu32"s",
                  (xTaskGetTickCount() - start_time) * portTICK_PERIOD_MS / 1000);
     }
 
@@ -568,7 +568,7 @@ static esp_err_t mlink_ota_firmware(httpd_req_t *req)
         }
     }
 
-    MDF_LOGI("Firmware is sent to the device to complete, Spend time: %ds",
+    MDF_LOGI("Firmware is sent to the device to complete, Spend time: %"PRIu32"s",
              (xTaskGetTickCount() - start_time) * portTICK_PERIOD_MS / 1000);
     start_time = xTaskGetTickCount();
 
@@ -695,7 +695,7 @@ static esp_err_t mlink_ota_url(httpd_req_t *req)
         MDF_ERROR_GOTO(ret != MDF_OK, EXIT, "<%s> Write firmware to flash", mdf_err_to_name(ret));
     }
 
-    MDF_LOGI("The service download firmware is complete, Spend time: %ds",
+    MDF_LOGI("The service download firmware is complete, Spend time: %"PRIu32"s",
              (xTaskGetTickCount() - start_time) * portTICK_PERIOD_MS / 1000);
 
     mlink_httpd_resp_200(req);

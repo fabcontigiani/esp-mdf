@@ -15,6 +15,8 @@
 #include "argtable3/argtable3.h"
 #include "esp_console.h"
 #include "mbedtls/base64.h"
+#include "esp_chip_info.h"
+#include "esp_flash.h"
 
 #include "mdf_common.h"
 #include "mdebug.h"
@@ -29,7 +31,7 @@ static bool mac_str2hex(const char *mac_str, uint8_t *mac_hex)
     MDF_ERROR_ASSERT(!mac_str);
     MDF_ERROR_ASSERT(!mac_hex);
 
-    uint32_t mac_data[6] = {0};
+    unsigned int mac_data[6] = {0};
 
     int ret = sscanf(mac_str, MACSTR, mac_data, mac_data + 1, mac_data + 2,
                      mac_data + 3, mac_data + 4, mac_data + 5);
@@ -47,21 +49,25 @@ static bool mac_str2hex(const char *mac_str, uint8_t *mac_hex)
 static int version_func(int argc, char **argv)
 {
     esp_chip_info_t chip_info = {0};
+    uint32_t flashSize = 0;
 
     /**< Pint system information */
     esp_chip_info(&chip_info);
+    esp_flash_get_size(NULL, &flashSize);
     MDF_LOGI("ESP-IDF version  : %s", esp_get_idf_version());
     MDF_LOGI("ESP-MDF version  : %s", mdf_get_version());
     MDF_LOGI("compile time     : %s %s", __DATE__, __TIME__);
-    MDF_LOGI("free heap        : %d Bytes", esp_get_free_heap_size());
+    MDF_LOGI("free heap        : %"PRIu32" Bytes", esp_get_free_heap_size());
     MDF_LOGI("CPU cores        : %d", chip_info.cores);
     MDF_LOGI("silicon revision : %d", chip_info.revision);
-    MDF_LOGI("feature          : %s%s%s%s%d%s",
-             chip_info.features & CHIP_FEATURE_WIFI_BGN ? "/802.11bgn" : "",
-             chip_info.features & CHIP_FEATURE_BLE ? "/BLE" : "",
-             chip_info.features & CHIP_FEATURE_BT ? "/BT" : "",
-             chip_info.features & CHIP_FEATURE_EMB_FLASH ? "/Embedded-Flash:" : "/External-Flash:",
-             spi_flash_get_chip_size() / (1024 * 1024), " MB");
+    MDF_LOGI("feature          : %s%s%s%s%s%"PRIu32"%s%s",
+			(chip_info.features & CHIP_FEATURE_WIFI_BGN) ? "/802.11bgn" : "",
+			(chip_info.features & CHIP_FEATURE_BLE) ? "/BLE" : "",
+			(chip_info.features & CHIP_FEATURE_BT) ? "/BT" : "",
+			(chip_info.features & CHIP_FEATURE_IEEE802154) ? "IEEE-802.15.4" : "",
+			(chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "/Embedded-Flash: " : "",
+			(flashSize / 1024 / 1024), " MB",
+			(chip_info.features & CHIP_FEATURE_EMB_PSRAM) ? "Embedded-PSRAM" : "");
 
     return ESP_OK;
 }

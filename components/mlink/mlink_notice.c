@@ -221,7 +221,7 @@ static void mlink_notice_udp_task(void *arg)
             } while (broadcast_msg_size < MLINK_NOTICE_UDP_QUEUE_NUM * 13);
 
             broadcast_msg_size += sprintf(broadcast_msg_buf + broadcast_msg_size,
-                                          "\r\nflag=%d\r\ntype=%s\r\n", xTaskGetTickCount(), message_tmp);
+                                          "\r\nflag=%"PRIu32"\r\ntype=%s\r\n", xTaskGetTickCount(), message_tmp);
 
             MDF_LOGD("Mlink notice udp broadcast, size: %d, data:\n%s", broadcast_msg_size, broadcast_msg_buf);
 
