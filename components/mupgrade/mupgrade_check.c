@@ -134,6 +134,8 @@ static void mupgrade_version_fallback_task(void *arg)
 
 #endif /**< CONFIG_MUPGRADE_VERSION_FALLBACK_RESTART */
 
+
+#ifdef CONFIG_MUPGRADE_FIRMWARE_CHECK
 __attribute((constructor)) mdf_err_t mupgrade_partition_switch()
 {
     const volatile uint8_t firmware_flag[MUPGRADE_FIRMWARE_FLAG_SIZE] = MUPGRADE_FIRMWARE_FLAG;
@@ -151,7 +153,6 @@ __attribute((constructor)) mdf_err_t mupgrade_partition_switch()
     return MDF_OK;
 }
 
-#ifdef CONFIG_MUPGRADE_FIRMWARE_CHECK
 /**
  * @brief Knuth–Morris–Pratt algorithm, a search algorithm
  */

@@ -27,10 +27,10 @@ menu "MDF Mupgrade"
             The interval at which the upgrade progress is actively reported
 
     config MUPGRADE_FIRMWARE_CHECK
-        bool "Check if the Mupgrade module is included"
+        bool "Check if the Mupgrade module is included - NOT RECOMENDED"
         default n
         help
-        Check if the Mupgrade module is included.
+        Check if the Mupgrade module is included. Mupgrade checks and version fallback with MDF functions is not recommended as there are issues with it. Firmware is validated using standard IDF functions during OTA finish operations depending on security settings anyways. Fallback to prevous versions can be implemented using standard IDF functions too as a better alternative.
 
     config MUPGRADE_FIRMWARE_FLAG
         string "Check if this identifier is included in the firmware"
@@ -41,7 +41,8 @@ menu "MDF Mupgrade"
 
     config MUPGRADE_VERSION_FALLBACK_RESTART
         bool "Fall back to the previous version"
-        default y
+        depends on MUPGRADE_FIRMWARE_CHECK
+        default n
         help
         If there is a factory partition, it will switch to the factory partition.
 
