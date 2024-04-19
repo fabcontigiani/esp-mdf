@@ -14,6 +14,8 @@
 
 #include "mdf_common.h"
 #include "mwifi.h"
+#include "cJSON.h"
+#include "driver/gpio.h"
 
 #if CONFIG_EXAMPLE_USE_DM9051
 #include "driver/spi_master.h"

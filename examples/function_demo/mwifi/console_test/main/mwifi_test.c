@@ -46,7 +46,7 @@ static bool mac_str2hex(const char *mac_str, uint8_t *mac_hex)
     MDF_ERROR_ASSERT(!mac_str);
     MDF_ERROR_ASSERT(!mac_hex);
 
-    uint32_t mac_data[6] = {0};
+    unsigned int mac_data[6] = {0};
 
     int ret = sscanf(mac_str, MACSTR, mac_data, mac_data + 1, mac_data + 2,
                      mac_data + 3, mac_data + 4, mac_data + 5);
@@ -237,7 +237,7 @@ static int mesh_status_func(int argc, char **argv)
     }
 
     if (mesh_status_args.stop->count) {
-        MDF_LOGD("task, name: %s, HWM: %d", pcTaskGetTaskName(NULL), uxTaskGetStackHighWaterMark(NULL));
+        MDF_LOGD("task, name: %s, HWM: %d", pcTaskGetName(NULL), uxTaskGetStackHighWaterMark(NULL));
         ret = mwifi_stop();
         MDF_ERROR_CHECK(ret != MDF_OK, ret, "Stop ESP-WIFI-MESH");
     }
@@ -424,7 +424,7 @@ static void mesh_iperf_client_task(void *arg)
             uint32_t report_timer = (report_ticks - start_ticks) * portTICK_PERIOD_MS / 1000;
             double report_size    = (data_type.custom - report_count) * g_mesh_iperf_cfg.packet_len / 1e6;
 
-            MDF_LOGI("["MACSTR"]  %2d-%2d sec  %2.2f MBytes  %0.2f Mbits/sec",
+            MDF_LOGI("["MACSTR"]  %2"PRIu32"-%2"PRIu32" sec  %2.2f MBytes  %0.2f Mbits/sec",
                      MAC2STR(g_mesh_iperf_cfg.addr), report_timer - g_mesh_iperf_cfg.report_interval, report_timer,
                      report_size, report_size * 8 / g_mesh_iperf_cfg.report_interval);
 
@@ -456,7 +456,7 @@ static void mesh_iperf_client_task(void *arg)
     if (total_count && write_count && spend_time) {
         MDF_LOGI("client Report:");
         MDF_LOGI("[ ID] Interval      Transfer       Bandwidth      Jitter   Lost/Total Datagrams");
-        MDF_LOGI("[000] %2d-%2d sec    %2.2f MBytes    %0.2f Mbits/sec    %d ms    %d/%d (%d%%)",
+        MDF_LOGI("[000] %2d-%2"PRIu32" sec    %2.2f MBytes    %0.2f Mbits/sec    %"PRIu32" ms    %"PRIu32"/%"PRIu32" (%"PRIu32"%%)",
                  0, spend_time / 1000, total_len, total_len * 8 * 1000 / spend_time, spend_time / write_count,
                  lost_count, total_count, lost_count * 100 / total_count);
     }
@@ -502,14 +502,14 @@ static void mesh_iperf_server_task(void *arg)
         if (data_type.protocol == IPERF_BANDWIDTH && xTaskGetTickCount() >= report_ticks) {
             uint32_t report_timer = (report_ticks - start_ticks) * portTICK_PERIOD_MS / 1000;
             double report_size    = (data_type.custom - report_count) * g_mesh_iperf_cfg.packet_len / 1e6;
-            MDF_LOGI("["MACSTR"]  %2d-%2d sec  %2.2f MBytes  %0.2f Mbits/sec",
+            MDF_LOGI("["MACSTR"]  %2"PRIu32"-%2"PRIu32" sec  %2.2f MBytes  %0.2f Mbits/sec",
                      MAC2STR(g_mesh_iperf_cfg.addr), report_timer - g_mesh_iperf_cfg.report_interval, report_timer,
                      report_size, report_size * 8 / g_mesh_iperf_cfg.report_interval);
 
             report_ticks = xTaskGetTickCount() + g_mesh_iperf_cfg.report_interval * 1000 / portTICK_PERIOD_MS;
             report_count = data_type.custom;
         } else if (data_type.protocol == IPERF_PING) {
-            MDF_LOGV("recv IPERF_PING, seq: %d, recv_count: %d", data_type.custom, recv_count);
+            MDF_LOGV("recv IPERF_PING, seq: %"PRIu32", recv_count: %"PRIu32, data_type.custom, recv_count);
             buffer[0] = esp_mesh_get_layer();
             ret = mwifi_write(g_mesh_iperf_cfg.addr, &data_type, buffer, buffer_len, true);
             MDF_ERROR_CONTINUE(ret != MDF_OK, "<%s> mwifi_write", mdf_err_to_name(ret));
@@ -520,12 +520,12 @@ static void mesh_iperf_server_task(void *arg)
             uint32_t spend_time  = (xTaskGetTickCount() - start_ticks) * portTICK_PERIOD_MS;
 
             MDF_LOGI("[ ID] Interval      Transfer       Bandwidth      Jitter   Lost/Total Datagrams");
-            MDF_LOGI("[000] %2d-%2d sec    %2.2f MBytes    %0.2f Mbits/sec    %d ms    %d/%d (%d%%)",
+            MDF_LOGI("[000] %2d-%2"PRIu32" sec    %2.2f MBytes    %0.2f Mbits/sec    %"PRIu32" ms    %"PRIu32"/%"PRIu32" (%"PRIu32"%%)",
                      0, spend_time / 1000, total_len, total_len * 8 * 1000 / spend_time, spend_time / recv_count,
                      lost_count, total_count, lost_count * 100 / total_count);
 
             data_type.custom = recv_count;
-            MDF_LOGD("data_type.custom: %d",  data_type.custom);
+            MDF_LOGD("data_type.custom: %"PRIu32,  data_type.custom);
             ret = mwifi_write(g_mesh_iperf_cfg.addr, &data_type, &ret, 1, true);
             MDF_ERROR_CONTINUE(ret != MDF_OK, "<%s> mwifi_write", mdf_err_to_name(ret));
         }
@@ -584,13 +584,13 @@ static void mesh_iperf_ping_task(void *arg)
         min_time =  MIN(min_time, res_time);
 
         if (ret == MDF_ERR_MWIFI_TIMEOUT || ret == ESP_ERR_MESH_TIMEOUT) {
-            MDF_LOGW("seq=%d Destination Host Unreachable", data_type.custom);
+            MDF_LOGW("seq=%"PRIu32" Destination Host Unreachable", data_type.custom);
             continue;
         }
 
         recv_count++;
         server_layer = recv_data[0];
-        MDF_LOGI("%d bytes from " MACSTR ": seq=%d self_layer=%d server_layer=%d time=%ld ms",
+        MDF_LOGI("%d bytes from " MACSTR ": seq=%"PRIu32" self_layer=%d server_layer=%d time=%"PRId64" ms",
                  recv_size, MAC2STR(g_mesh_iperf_cfg.addr), data_type.custom,
                  esp_mesh_get_layer(), server_layer, res.tv_sec * 1000 + res.tv_usec / 1000);
 
@@ -600,7 +600,7 @@ static void mesh_iperf_ping_task(void *arg)
 
     MDF_LOGI("client ping report:");
     MDF_LOGI("ping statistics for " MACSTR, MAC2STR(g_mesh_iperf_cfg.addr));
-    MDF_LOGI("%d packets transmitted, %d received, %d packet loss, time: total %d ms, max: %d, min: %d, average %d ms",
+    MDF_LOGI("%d packets transmitted, %d received, %d packet loss, time: total %d ms, max: %"PRIu32", min: %"PRIu32", average %d ms",
              send_count, recv_count, (send_count - recv_count) * 100 / send_count,
              spend_time, max_time, min_time, spend_time / send_count);
 

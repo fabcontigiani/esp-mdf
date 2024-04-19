@@ -15,6 +15,7 @@
 #include "mdf_common.h"
 #include "mwifi.h"
 #include "driver/uart.h"
+#include "cJSON.h"
 
 // #define MEMORY_DEBUG
 #define BUF_SIZE 512

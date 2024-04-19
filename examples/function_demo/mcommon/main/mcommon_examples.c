@@ -68,7 +68,7 @@ static void info_store_test()
      */
     value = 0;
     MDF_ERROR_ASSERT(mdf_info_load(key, &value, sizeof(uint32_t)));
-    MDF_LOGI("value: %d", value);
+    MDF_LOGI("value: %"PRIu32, value);
 
     /**
      * @brief  Erase the information with given key
