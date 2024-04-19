@@ -14,7 +14,7 @@
 
 #include "esp_wifi.h"
 #ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
-#include "miniz.h"
+#include "../third_party/miniz/miniz.h"
 #endif
 #include "mbedtls/md5.h"
 #include "mbedtls/aes.h"
