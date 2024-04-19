@@ -497,7 +497,7 @@ static void mconfig_chain_slave_task(void *arg)
                                (size_t *)&whitelist_compress_size, 10000 / portTICK_PERIOD_MS);
 #else
             ret = mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, mconfig_data->whitelist_data,
-                               (uint16_t *)&mconfig_data->whitelist_size, 10000 / portTICK_PERIOD_MS);
+                               (size_t *)&mconfig_data->whitelist_size, 10000 / portTICK_PERIOD_MS);
 #endif
             if (ret == MDF_ERR_TIMEOUT) {
                 break;
@@ -529,7 +529,7 @@ static void mconfig_chain_slave_task(void *arg)
                            mz_error(ret), (int)whitelist_compress_size,  MAC2STR(src_addr), MAC2STR(dest_addr));
 #else
         mbedtls_aes_crypt_cfb128(&aes_ctx, MBEDTLS_AES_DECRYPT, mconfig_data->whitelist_size,
-                                 &aes_iv_offset, aes_iv, mconfig_data->whitelist_data, mconfig_data->whitelist_data);
+                                 &aes_iv_offset, aes_iv, (unsigned char *)mconfig_data->whitelist_data, (unsigned char *)mconfig_data->whitelist_data);
 #endif
 
 #endif /**< CONFIG_MCONFIG_WHITELIST_ENABLE */

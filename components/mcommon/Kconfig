@@ -105,7 +105,7 @@ menu "MDF Mcommon"
 
         config MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
         bool "Disable MINIZ component includes"
-        default y
+        default n
         help
             Some MDF components contain code that depends on MINIZ component even if the 
             compression is not used. This options disables such parts of code so the MINIZ 
