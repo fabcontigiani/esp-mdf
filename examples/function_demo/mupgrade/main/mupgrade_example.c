@@ -183,7 +183,7 @@ static void ota_task()
         }
     }
 
-    MDF_LOGI("The service download firmware is complete, Spend time: %ds",
+    MDF_LOGI("The service download firmware is complete, Spend time: %"PRId32"s",
              (xTaskGetTickCount() - start_time) * portTICK_PERIOD_MS / 1000);
 
     start_time = xTaskGetTickCount();
@@ -199,7 +199,7 @@ static void ota_task()
         goto EXIT;
     }
 
-    MDF_LOGI("Firmware is sent to the device to complete, Spend time: %ds",
+    MDF_LOGI("Firmware is sent to the device to complete, Spend time: %"PRId32"s",
              (xTaskGetTickCount() - start_time) * portTICK_PERIOD_MS / 1000);
     MDF_LOGI("Devices upgrade completed, successed_num: %d, unfinished_num: %d", upgrade_result.successed_num, upgrade_result.unfinished_num);
 

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <inttypes.h>
 #include "mwifi.h"
 #include "mdf_common.h"
 #include "mespnow.h"
@@ -590,9 +591,15 @@ static void mesh_iperf_ping_task(void *arg)
 
         recv_count++;
         server_layer = recv_data[0];
+#ifdef IDF_V4
+        MDF_LOGI("%d bytes from " MACSTR ": seq=%"PRIu32" self_layer=%d server_layer=%d time=%ld ms",
+                 recv_size, MAC2STR(g_mesh_iperf_cfg.addr), data_type.custom,
+                 esp_mesh_get_layer(), server_layer, res.tv_sec * 1000 + res.tv_usec / 1000);
+#elif defined IDF_V5
         MDF_LOGI("%d bytes from " MACSTR ": seq=%"PRIu32" self_layer=%d server_layer=%d time=%"PRId64" ms",
                  recv_size, MAC2STR(g_mesh_iperf_cfg.addr), data_type.custom,
                  esp_mesh_get_layer(), server_layer, res.tv_sec * 1000 + res.tv_usec / 1000);
+#endif
 
         MDF_FREE(recv_data);
         MDF_ERROR_CONTINUE(ret != MDF_OK, "<%s> mwifi_read", mdf_err_to_name(ret));

@@ -16,6 +16,7 @@
 #include "mwifi.h"
 #include "cJSON.h"
 #include "driver/gpio.h"
+#include "esp_eth.h"
 
 #if CONFIG_EXAMPLE_USE_DM9051
 #include "driver/spi_master.h"
@@ -122,7 +123,7 @@ void tcp_client_read_task(void *arg)
          * @brief  Convert mac from string format to binary
          */
         do {
-            uint32_t mac_data[MWIFI_ADDR_LEN] = { 0 };
+            unsigned int mac_data[MWIFI_ADDR_LEN] = { 0 };
             sscanf(json_dest_addr->valuestring, MACSTR,
                    mac_data, mac_data + 1, mac_data + 2,
                    mac_data + 3, mac_data + 4, mac_data + 5);
@@ -266,7 +267,7 @@ static void print_system_info_timercb(TimerHandle_t timer)
 
     if (esp_mesh_is_root() == true) {
         MDF_LOGI("System information, channel: %d, layer: %d, self mac: " MACSTR
-                 ", node num: %d, free heap: %u",
+                 ", node num: %d, free heap: %"PRIu32,
                  primary,
                  esp_mesh_get_layer(), MAC2STR(eth_mac),
                  esp_mesh_get_total_node_num(), esp_get_free_heap_size());
@@ -359,7 +360,6 @@ static mdf_err_t wifi_eth_init()
     MDF_ERROR_ASSERT(esp_event_loop_create_default());
     esp_netif_config_t eth_cfg = ESP_NETIF_DEFAULT_ETH();
     esp_netif_t *eth_netif = esp_netif_new(&eth_cfg);
-    MDF_ERROR_ASSERT(esp_eth_set_default_handlers(eth_netif));
 
     MDF_ERROR_ASSERT(esp_event_handler_register(ETH_EVENT, ESP_EVENT_ANY_ID, &eth_event_handler, NULL));
     MDF_ERROR_ASSERT(esp_event_handler_register(IP_EVENT, ESP_EVENT_ANY_ID, &ip_event_handler, NULL));
@@ -370,18 +370,38 @@ static mdf_err_t wifi_eth_init()
     phy_config.reset_gpio_num = CONFIG_EXAMPLE_ETH_PHY_RST_GPIO;
 
 #if CONFIG_EXAMPLE_USE_INTERNAL_ETHERNET
+#ifdef IDF_V4
     mac_config.smi_mdc_gpio_num = CONFIG_EXAMPLE_ETH_MDC_GPIO;
     mac_config.smi_mdio_gpio_num = CONFIG_EXAMPLE_ETH_MDIO_GPIO;
     esp_eth_mac_t *mac = esp_eth_mac_new_esp32(&mac_config);
+#elif defined IDF_V5
+    eth_esp32_emac_config_t esp32_emac_config = ETH_ESP32_EMAC_DEFAULT_CONFIG();
+    esp32_emac_config.smi_mdc_gpio_num = CONFIG_EXAMPLE_ETH_MDC_GPIO;
+    esp32_emac_config.smi_mdio_gpio_num = CONFIG_EXAMPLE_ETH_MDIO_GPIO;
+    esp_eth_mac_t *mac = esp_eth_mac_new_esp32(&esp32_emac_config, &mac_config);
+#endif
 #if CONFIG_EXAMPLE_ETH_PHY_IP101
     esp_eth_phy_t *phy = esp_eth_phy_new_ip101(&phy_config);
 #elif CONFIG_EXAMPLE_ETH_PHY_RTL8201
     esp_eth_phy_t *phy = esp_eth_phy_new_rtl8201(&phy_config);
-#elif CONFIG_EXAMPLE_ETH_PHY_LAN8720
-    esp_eth_phy_t *phy = esp_eth_phy_new_lan8720(&phy_config);
 #elif CONFIG_EXAMPLE_ETH_PHY_DP83848
     esp_eth_phy_t *phy = esp_eth_phy_new_dp83848(&phy_config);
+
+#elif CONFIG_EXAMPLE_ETH_PHY_LAN87XX
+#ifdef IDF_V4
+    esp_eth_phy_t *phy = esp_eth_phy_new_lan8720(&phy_config);
+#elif defined IDF_V5
+    esp_eth_phy_t *phy = esp_eth_phy_new_lan87xx(&phy_config);
 #endif
+
+#elif CONFIG_EXAMPLE_ETH_PHY_KSZ80XX
+#ifdef IDF_V4
+#error "KSZ80xx requires ESP-IDF v5+"
+#elif defined IDF_V5
+    esp_eth_phy_t *phy = esp_eth_phy_new_ksz80xx(&phy_config);
+#endif
+#endif
+
 #elif CONFIG_EXAMPLE_USE_DM9051
     gpio_install_isr_service(0);
     spi_device_handle_t spi_handle = NULL;
@@ -403,11 +423,21 @@ static mdf_err_t wifi_eth_init()
     };
     ESP_ERROR_CHECK(spi_bus_add_device(CONFIG_EXAMPLE_DM9051_SPI_HOST, &devcfg, &spi_handle));
     /* dm9051 ethernet driver is based on spi driver */
+#ifdef IDF_V4
     eth_dm9051_config_t dm9051_config = ETH_DM9051_DEFAULT_CONFIG(spi_handle);
+#elif defined IDF_V5
+    eth_dm9051_config_t dm9051_config = ETH_DM9051_DEFAULT_CONFIG(CONFIG_EXAMPLE_DM9051_SPI_HOST, &devcfg);
+#endif
     dm9051_config.int_gpio_num = CONFIG_EXAMPLE_DM9051_INT_GPIO;
     esp_eth_mac_t *mac = esp_eth_mac_new_dm9051(&dm9051_config, &mac_config);
     esp_eth_phy_t *phy = esp_eth_phy_new_dm9051(&phy_config);
+
+#elif EXAMPLE_USE_KSZ8851SNL
+#error "This KSZ8851SNL is not implemented in this example, but you can use /esp-idf/examples/ethernet/basic/ as a guide."
+#elif EXAMPLE_USE_W5500
+#error "This W5500 is not implemented in this example, but you can use /esp-idf/examples/ethernet/basic/ as a guide."
 #endif
+
     esp_eth_config_t config = ETH_DEFAULT_CONFIG(mac, phy);
     esp_eth_handle_t eth_handle = NULL;
     MDF_ERROR_ASSERT(esp_eth_driver_install(&config, &eth_handle));
@@ -435,7 +465,7 @@ static mdf_err_t wifi_eth_init()
  */
 static mdf_err_t event_loop_cb(mdf_event_loop_t event, void *ctx)
 {
-    MDF_LOGI("event_loop_cb, event: %d", event);
+    MDF_LOGI("event_loop_cb, event: %"PRIu32, event);
 
     switch (event) {
         case MDF_EVENT_MWIFI_STARTED:

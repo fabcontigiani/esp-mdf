@@ -177,7 +177,7 @@ static void print_system_info_timercb(TimerHandle_t timer)
     esp_mesh_get_parent_bssid(&parent_bssid);
 
     MDF_LOGI("System information, channel: %d, layer: %d, self mac: " MACSTR ", parent bssid: " MACSTR
-             ", parent rssi: %d, node num: %d, free heap: %u",
+             ", parent rssi: %d, node num: %d, free heap: %"PRIu32,
              primary,
              esp_mesh_get_layer(), MAC2STR(sta_mac), MAC2STR(parent_bssid.addr),
              mwifi_get_parent_rssi(), esp_mesh_get_total_node_num(), esp_get_free_heap_size());
@@ -233,7 +233,7 @@ static mdf_err_t wifi_init()
  */
 static mdf_err_t event_loop_cb(mdf_event_loop_t event, void *ctx)
 {
-    MDF_LOGI("event_loop_cb, event: %d", event);
+    MDF_LOGI("event_loop_cb, event: %"PRIu32, event);
 
     switch (event) {
         case MDF_EVENT_MWIFI_STARTED:
