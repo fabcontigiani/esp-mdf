@@ -704,7 +704,7 @@ static mdf_err_t mwifi_subcontract_write(const mesh_addr_t *dest_addr, const mes
 
         /**< ESP-WIFI-MESH send completed, release send lock */
         xSemaphoreGive(s_mwifi_send_lock);
-        MDF_ERROR_CHECK(ret != ESP_OK && !(flag & MESH_DATA_GROUP && ret == ESP_ERR_MESH_DISCARD), ret,
+        MDF_ERROR_CHECK((ret != ESP_OK) && !((flag & MESH_DATA_GROUP) && (ret == ESP_ERR_MESH_DISCARD)), ret,
                         "Node failed to send packets, dest_addr: " MACSTR
                         ", flag: 0x%02x, opt->type: 0x%02x, opt->len: %u, data->tos: %d, data: %p, size: %u",
                         MAC2STR(dest_addr->addr), flag, opt->type, opt->len, mesh_data.tos, mesh_data.data, mesh_data.size);
@@ -1103,7 +1103,7 @@ mdf_err_t __mwifi_read(uint8_t *src_addr, mwifi_data_type_t *data_type,
         /**
          * @brief If this data typde is group and my is in this destination group, receive this data.
          */
-        if (data_head.type.group && data_head.type.communicate != MWIFI_COMMUNICATE_BROADCAST) {
+        if (data_head.type.group && (data_head.type.communicate != MWIFI_COMMUNICATE_BROADCAST)) {
             uint8_t self_addr[MWIFI_ADDR_LEN] = {0};
             esp_wifi_get_mac(ESP_IF_WIFI_STA, self_addr);
 
@@ -1198,7 +1198,7 @@ mdf_err_t mwifi_root_write(const uint8_t *addrs_list, size_t addrs_num,
         .transmit_self = true,
     };
     mesh_data_t mesh_data = {
-        .tos   = !block || !g_init_config->retransmit_enable ? MESH_TOS_DEF : MESH_TOS_P2P,
+        .tos   = (!block || !g_init_config->retransmit_enable) ? MESH_TOS_DEF : MESH_TOS_P2P,
         .data  = (uint8_t *)data,
         .size  = size,
     };
@@ -1208,13 +1208,13 @@ mdf_err_t mwifi_root_write(const uint8_t *addrs_list, size_t addrs_num,
         .type = MESH_OPT_RECV_DS_ADDR,
     };
 
-    data_flag = (!block) ? data_flag | MESH_DATA_NONBLOCK : data_flag;
+    data_flag = (!block) ? (data_flag | MESH_DATA_NONBLOCK) : data_flag;
     memcpy(&data_head.type, data_type, sizeof(mwifi_data_type_t));
 
     /**
      * @brief If destination adress is group address, will forward to each device in address list.
      */
-    if (data_head.type.group && data_type->communicate != MWIFI_COMMUNICATE_BROADCAST) {
+    if (data_head.type.group && (data_type->communicate != MWIFI_COMMUNICATE_BROADCAST)) {
         for (int i = 0; i < addrs_num; ++i) {
             MDF_LOGD("count: %d, dest_addr: " MACSTR ", mesh_data.size: %u, data: %.*s",
                      i, MAC2STR(addrs_list + 6 * i), mesh_data.size, mesh_data.size, mesh_data.data);
@@ -1301,7 +1301,7 @@ mdf_err_t mwifi_root_write(const uint8_t *addrs_list, size_t addrs_num,
         ret = mwifi_transmit_write((mesh_addr_t *)tmp_addrs, addrs_num, &mesh_data,
                                    data_flag, &mesh_opt);
         MDF_ERROR_GOTO(ret != MDF_OK, EXIT, "Mwifi_transmit_write");
-    } else if (data_type->communicate == MWIFI_COMMUNICATE_BROADCAST && addrs_num == 1) {
+    } else if ((data_type->communicate == MWIFI_COMMUNICATE_BROADCAST) && (addrs_num == 1)) {
 
         /**< Fragmenting packets for transmission */
         ret = mwifi_subcontract_write((mesh_addr_t *)addrs_list, &mesh_data, data_flag, &mesh_opt);
