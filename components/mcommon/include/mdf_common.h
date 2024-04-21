@@ -66,6 +66,7 @@
 #include "esp_partition.h"
 #include "esp_event.h"
 #include "esp_http_client.h"
+#include "esp_mac.h"
 
 #include "lwip/sockets.h"
 #include "lwip/netdb.h"

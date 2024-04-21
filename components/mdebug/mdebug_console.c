@@ -63,8 +63,13 @@ static mdf_err_t initialize_filesystem()
     };
 
     /**< Initialize FAT filesystem in SPI flash and register it in VFS */
+#ifdef IDF_V4
     ret = esp_vfs_fat_spiflash_mount(MOUNT_PATH, CONFIG_MDEBUG_PARTITION_LABEL,
                                      &mount_config, &wl_handle);
+#elif defined IDF_V5                                     
+    ret = esp_vfs_fat_spiflash_mount_rw_wl(MOUNT_PATH, CONFIG_MDEBUG_PARTITION_LABEL,
+                                     &mount_config, &wl_handle);
+#endif                                     
     MDF_ERROR_CHECK(ret != ESP_OK, ret, "Failed to mount FATFS");
 
     return MDF_OK;

@@ -187,8 +187,8 @@ static void combine_ap_mesh_password(uint8_t dst[64], const uint8_t *ap_password
     uint8_t ap_sha256[32] = { 0 };
     uint8_t mesh_sha256[32] = { 0 };
 
-    mbedtls_sha256_ret(ap_password, strlen((const char *)ap_password), ap_sha256, 0);
-    mbedtls_sha256_ret(mesh_password, strlen((const char *)mesh_password), mesh_sha256, 0);
+    mbedtls_sha256(ap_password, strlen((const char *)ap_password), ap_sha256, 0);
+    mbedtls_sha256(mesh_password, strlen((const char *)mesh_password), mesh_sha256, 0);
 
     for (int i = 0; i < 32; i++) {
         mesh_sha256[i] ^= ap_sha256[i];
@@ -648,7 +648,7 @@ static void mconfig_ble_connect_timer_delete(void)
     }
 }
 
-static void mconfig_ble_connect_timercb(TimerHandle_t timer)
+static void mconfig_ble_connect_timercb(void *timer)
 {
     if (!g_connect_timer) {
         MDF_LOGW("Timer has been deleted");
@@ -745,8 +745,8 @@ static void mconfig_blufi_event_callback(esp_blufi_cb_event_t event, esp_blufi_c
             break;
 
         case ESP_BLUFI_EVENT_RECV_MDF_CUSTOM: {
-            MDF_LOGD("data_len: %d, custom_data: %.*s",
-                     param->custom_data.data_len, param->custom_data.data_len, param->custom_data.data);
+            MDF_LOGD("data_len: %"PRIu32", custom_data: %.*s",
+                     param->custom_data.data_len, (int)param->custom_data.data_len, param->custom_data.data);
 
             mconfig_ble_connect_timer_delete();
             mconfig_ble_connect_timer_create();
@@ -759,10 +759,10 @@ static void mconfig_blufi_event_callback(esp_blufi_cb_event_t event, esp_blufi_c
         case ESP_BLUFI_EVENT_RECV_CUSTOM_DATA: {
             bool config_flag = true;
 
-            MDF_LOGV("param->custom_data.data_len: %d, param->custom_data.data: %s",
+            MDF_LOGV("param->custom_data.data_len: %"PRIu32", param->custom_data.data: %s",
                      param->custom_data.data_len, param->custom_data.data);
             MDF_ERROR_BREAK(param->custom_data.data_len < 6,
-                            "param->custom_data.data_len: %d", param->custom_data.data_len);
+                            "param->custom_data.data_len: %"PRIu32, param->custom_data.data_len);
 
             mconfig_ble_connect_timer_delete();
 
