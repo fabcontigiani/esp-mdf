@@ -56,9 +56,11 @@ mdf_err_t mupgrade_version_fallback()
         partition = esp_ota_get_next_update_partition(NULL);
     }
 
+    /* XXX: DEPRECTAED
     ret = mupgrade_firmware_check(partition);
     MDF_ERROR_CHECK(ret != MDF_OK, ret, "mupgrade_firmware_check failed!");
-
+    */
+    
     ret = esp_ota_set_boot_partition(partition);
     MDF_ERROR_CHECK(ret != MDF_OK, ret, "esp_ota_set_boot_partition failed!");
 

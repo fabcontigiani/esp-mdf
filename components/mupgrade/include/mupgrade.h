@@ -169,7 +169,7 @@ mdf_err_t mupgrade_firmware_download_finished(size_t image_size);
  *    - MDF_OK
  *    - MDF_ERR_MUPGRADE_FIRMWARE_INVALID
  */
-mdf_err_t mupgrade_firmware_check(const esp_partition_t *partition);
+mdf_err_t mupgrade_firmware_check(const esp_partition_t *partition) __attribute__((deprecated("mupgrade_firmware_check is deprecated, use firmware checks from IDF instead")));
 
 /**
  * @brief  Root sends firmware to other nodes
