@@ -293,24 +293,26 @@ static void esp_mesh_event_cb(void *arg, esp_event_base_t event_base, int32_t ev
     evet_info_index = (evet_info_index + 1) % MWIFI_EVET_INFO_SIZE;
 }
 
-mdf_err_t mwifi_init(const mwifi_init_config_t *config)
+mdf_err_t mwifi_init(mwifi_init_config_t *config)
 {
     MDF_PARAM_CHECK(config);
     MDF_ERROR_CHECK(g_mwifi_inited_flag, MDF_ERR_MWIFI_INITED, "Mwifi has been initialized");
 
     MDF_LOGI("esp-mdf version: %s", mdf_get_version());
 
+#ifndef CONFIG_MWIFI_DISABLE_STATIC_ALLOC
     if (!g_init_config) {
         g_init_config = MDF_CALLOC(1, sizeof(mwifi_init_config_t));
         MDF_ERROR_CHECK(!g_init_config, MDF_ERR_NO_MEM, "");
     }
-
     if (!g_ap_config) {
         g_ap_config = MDF_CALLOC(1, sizeof(mwifi_config_t));
         MDF_ERROR_CHECK(!g_ap_config, MDF_ERR_NO_MEM, "");
     }
-
     memcpy(g_init_config, config, sizeof(mwifi_init_config_t));
+#else
+    g_init_config = config;
+#endif
     g_mwifi_inited_flag = true;
 
     /**< Mesh initialization */
@@ -585,20 +587,29 @@ mdf_err_t mwifi_deinit()
     MDF_ERROR_CHECK(!g_mwifi_inited_flag, MDF_ERR_MWIFI_NOT_INIT, "Mwifi isn't initialized");
     g_mwifi_inited_flag = false;
 
+#ifndef CONFIG_MWIFI_DISABLE_STATIC_ALLOC
     MDF_FREE(g_init_config);
     MDF_FREE(g_ap_config);
+#else
+    g_init_config = NULL;
+    g_ap_config = NULL;
+#endif
 
     ESP_ERROR_CHECK(esp_mesh_deinit());
 
     return MDF_OK;
 }
 
-mdf_err_t mwifi_set_init_config(const mwifi_init_config_t *init_config)
+mdf_err_t mwifi_set_init_config(mwifi_init_config_t *init_config)
 {
     MDF_PARAM_CHECK(init_config);
     MDF_ERROR_CHECK(!g_mwifi_inited_flag, MDF_ERR_MWIFI_NOT_INIT, "Mwifi isn't initialized");
 
+#ifndef CONFIG_MWIFI_DISABLE_STATIC_ALLOC
     memcpy(g_init_config, init_config, sizeof(mwifi_init_config_t));
+#else
+    g_init_config = init_config;
+#endif
 
     return MDF_OK;
 }
@@ -608,12 +619,16 @@ mdf_err_t mwifi_get_init_config(mwifi_init_config_t *init_config)
     MDF_PARAM_CHECK(init_config);
     MDF_ERROR_CHECK(!g_mwifi_inited_flag, MDF_ERR_MWIFI_NOT_INIT, "Mwifi isn't initialized");
 
+#ifndef CONFIG_MWIFI_DISABLE_STATIC_ALLOC
     memcpy(init_config, g_init_config, sizeof(mwifi_init_config_t));
+#else
+    init_config = g_init_config;
+#endif
 
     return MDF_OK;
 }
 
-mdf_err_t mwifi_set_config(const mwifi_config_t *config)
+mdf_err_t mwifi_set_config(mwifi_config_t *config)
 {
     MDF_ERROR_CHECK(!g_mwifi_inited_flag, MDF_ERR_MWIFI_NOT_INIT, "Mwifi isn't initialized");
     MDF_PARAM_CHECK(config);
@@ -625,7 +640,11 @@ mdf_err_t mwifi_set_config(const mwifi_config_t *config)
     MDF_PARAM_CHECK(!strlen(config->mesh_password)
                     || (strlen(config->mesh_password) >= 8 && strlen(config->mesh_password) < 64));
 
+#ifndef CONFIG_MWIFI_DISABLE_STATIC_ALLOC
     memcpy(g_ap_config, config, sizeof(mwifi_config_t));
+#else
+    g_ap_config = config;
+#endif
 
     return MDF_OK;
 }
@@ -635,7 +654,11 @@ mdf_err_t mwifi_get_config(mwifi_config_t *config)
     MDF_PARAM_CHECK(config);
     MDF_ERROR_CHECK(!g_ap_config, ESP_ERR_NOT_SUPPORTED, "config information is not set");
 
+#ifndef CONFIG_MWIFI_DISABLE_STATIC_ALLOC
     memcpy(config, g_ap_config, sizeof(mwifi_config_t));
+#else
+    config = g_ap_config;
+#endif
 
     return MDF_OK;
 }

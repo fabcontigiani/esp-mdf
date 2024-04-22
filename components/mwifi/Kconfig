@@ -1,5 +1,16 @@
 menu "MDF Mwifi"
 
+	config MWIFI_DISABLE_STATIC_ALLOC
+        bool "Disable mwifi config static allocation"
+        default y
+        help
+            Mwifi allocates memory for mwifi_init_config_t and mwifi_config_t structures locally as static variables by default.
+            As the user will most likely initialize the config structures in external module anyways, this is then redundant
+            and creates unnecesary desync between external and static configs.
+
+            This option disables this behaviour, so the configs are targeted by pointer from user's memory allocation instead.
+            This also means the init, deinit, restart etc. will correctly work with values adjusted in user's configuration.
+            
     menu "Root config"
 
         config MWIFI_VOTE_PERCENTAGE
