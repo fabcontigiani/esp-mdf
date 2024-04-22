@@ -14,7 +14,7 @@ config MESH_ID
 config MESH_CHANNEL
     int "Mesh network channel"
     range 1 14
-    default 13
+    default 11
     help
         Mesh network channel.
 
