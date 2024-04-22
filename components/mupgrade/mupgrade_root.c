@@ -12,9 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <inttypes.h>
 #include "mdf_common.h"
 #include "mupgrade.h"
 #include "mwifi.h"
+#include "esp_image_format.h"
 
 typedef struct {
     uint8_t src_addr[MWIFI_ADDR_LEN];
@@ -69,6 +71,70 @@ mdf_err_t mupgrade_firmware_init(const char *name, size_t size)
     MDF_ERROR_CHECK(g_upgrade_config->status.error_code != MDF_OK, ret, "esp_ota_begin failed");
 
     return MDF_OK;
+}
+
+mdf_err_t mupgrade_firmware_repeat(const char *name, size_t size, const uint8_t* expected_sha256)
+{
+    MDF_PARAM_CHECK(name);
+    MDF_PARAM_CHECK(size > 0);
+    MDF_PARAM_CHECK(expected_sha256);
+
+    mdf_err_t ret = MDF_OK;
+
+    /**< Get partition info of currently running app
+    Return the next OTA app partition which should be written with a new firmware.*/
+    const esp_partition_t *running = esp_ota_get_running_partition();
+    const esp_partition_t *update  = esp_ota_get_next_update_partition(NULL);
+
+    MDF_ERROR_CHECK(!running || !update, MDF_ERR_MUPGRADE_FIRMWARE_PARTITION,
+                    "No partition is found or flash read operation failed");
+    MDF_ERROR_CHECK(size > update->size,
+                    MDF_ERR_INVALID_ARG, "The size of the firmware is wrong");
+
+    /**<  Verify update partition contents */
+    esp_app_desc_t desc = { 0 };
+    esp_image_metadata_t data;
+	const esp_partition_pos_t part_pos = {
+	  .offset = update->address,
+	  .size = update->size,
+	};
+	ret = esp_image_verify(ESP_IMAGE_VERIFY, &part_pos, &data);
+    MDF_ERROR_CHECK(ret != ESP_OK,
+                    ESP_ERR_IMAGE_INVALID, "Upgrade partition verification failed");
+
+    MDF_LOGI("Running partition, label: %s, type: 0x%x, subtype: 0x%x, address: 0x%"PRIx32,
+             running->label, running->type, running->subtype, running->address);
+    MDF_LOGI("Update partition, label: %s, type: 0x%x, subtype: 0x%x, address: 0x%"PRIx32,
+             update->label, update->type, update->subtype, update->address);
+
+    ret = esp_ota_get_partition_description(update, &desc);
+    MDF_ERROR_CHECK(ret != ESP_OK,
+                    ESP_ERR_IMAGE_INVALID, "Unable to get update partition description");
+
+    for (int i = 0; i < 32; i++) {
+		if( desc.app_elf_sha256[i] != expected_sha256[i] ) {
+			ret = ESP_FAIL;
+		}
+	}
+    MDF_ERROR_CHECK(ret != ESP_OK,
+                    ESP_ERR_IMAGE_INVALID, "Upgrade partition SHA256 compare failed");
+
+    if (!g_upgrade_config) {
+        g_upgrade_config = MDF_CALLOC(1, sizeof(mupgrade_config_t));
+        MDF_ERROR_CHECK(!g_upgrade_config, MDF_ERR_NO_MEM, "");
+        g_upgrade_config->queue  = xQueueCreate(3, sizeof(void *));
+    } else {
+        esp_ota_abort(g_upgrade_config->handle);
+    }
+
+    g_upgrade_config->start_time          = xTaskGetTickCount();
+    g_upgrade_config->partition           = update;
+    g_upgrade_config->status.total_size   = size;
+    g_upgrade_config->status.written_size = size;	// Provided size is expected to be already written
+    memcpy(g_upgrade_config->status.name, name, sizeof(g_upgrade_config->status.name));
+    g_upgrade_config->status.error_code = MDF_ERR_MUPGRADE_FIRMWARE_FINISH;
+
+    return ret;
 }
 
 mdf_err_t mupgrade_firmware_download(const void *data, size_t size)
