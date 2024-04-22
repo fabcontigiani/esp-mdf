@@ -17,6 +17,7 @@
 #include "cJSON.h"
 #include "driver/gpio.h"
 #include "esp_eth.h"
+//#include "esp_wifi_types.h"
 
 #if CONFIG_EXAMPLE_USE_DM9051
 #include "driver/spi_master.h"
@@ -510,7 +511,7 @@ void app_main()
         .mesh_password = CONFIG_MESH_PASSWORD,
         .mesh_type = MWIFI_MESH_ROOT,
         .channel = CONFIG_MESH_CHANNEL,
-
+		//.auth_mode = CONFIG_MWIFI_AUTH_MODE,
     };
 
     /**

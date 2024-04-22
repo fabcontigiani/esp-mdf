@@ -216,6 +216,7 @@ typedef struct {
                                          to another router with the same SSID. The new router might also be on a different channel.
                                          There is a risk that if the password is different between the new switched router and the previous
                                          one, the mesh network could be established but the root will never connect to the new switched router. */
+    wifi_auth_mode_t auth_mode;
 } mwifi_config_t;
 
 /**

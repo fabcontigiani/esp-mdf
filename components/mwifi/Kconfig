@@ -11,6 +11,24 @@ menu "MDF Mwifi"
             This option disables this behaviour, so the configs are targeted by pointer from user's memory allocation instead.
             This also means the init, deinit, restart etc. will correctly work with values adjusted in user's configuration.
             
+    choice
+        bool "Wifi Auth Mode"
+        default MWIFI_AUTH_WPA2_PSK
+        default MWIFI_AUTH_WPA3_PSK if ESP_WIFI_SOFTAP_SAE_SUPPORT
+        help 
+            WPA3_PSK requires PMF support for SoftAP (determined by ESP_WIFI_SOFTAP_SAE_SUPPORT option) which is only available since ESP-IDF v5.1+. ESP-IDF v4.x supports WPA3 only in Station mode and therefore can not be used.
+        config MWIFI_AUTH_WPA2_PSK
+            bool "MWIFI_AUTH_WPA2_PSK"
+        config MWIFI_AUTH_WPA3_PSK
+            bool "MWIFI_AUTH_WPA3_PSK"
+            depends on ESP_WIFI_SOFTAP_SAE_SUPPORT 
+    endchoice
+
+    config MWIFI_AUTH_MODE
+        int
+        default 3 if MWIFI_AUTH_WPA2_PSK
+        default 6 if MWIFI_AUTH_WPA3_PSK
+            
     menu "Root config"
 
         config MWIFI_VOTE_PERCENTAGE

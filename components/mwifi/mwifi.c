@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <inttypes.h>
+#include "mdf_common.h"
 #include "mwifi.h"
 #ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
 #include "../third_party/miniz/miniz.h"
@@ -521,9 +522,19 @@ mdf_err_t mwifi_start()
 
     if (strlen(ap_config->mesh_password)) {
         memcpy(mesh_config.mesh_ap.password, ap_config->mesh_password, sizeof(mesh_config.mesh_ap.password));
-        ESP_ERROR_CHECK(esp_mesh_set_ap_authmode(WIFI_AUTH_WPA2_PSK));
-    } else {
-        ESP_ERROR_CHECK(esp_mesh_set_ap_authmode(WIFI_AUTH_OPEN));
+    }
+
+    /* Require WPA2_PSK as minimum auth mode, because it is year 2024 at time of writing.
+     * You should be using WPA3 anyways, WPA2 is only kept for backward compatibility with ESP-IDF v4.x
+     * which does not support WPA3 for SoftAP.
+     * Also make sure there the value is somehow reasonable.
+     */
+    if((ap_config->auth_mode >= WIFI_AUTH_WPA2_PSK) && (ap_config->auth_mode <= WIFI_AUTH_MAX)) {
+    	ESP_ERROR_CHECK(esp_mesh_set_ap_authmode(ap_config->auth_mode));
+    }
+    else {
+    	ESP_ERROR_CHECK(esp_mesh_set_ap_authmode(CONFIG_MWIFI_AUTH_MODE));
+    	ap_config->auth_mode = CONFIG_MWIFI_AUTH_MODE;	// Also set it in config structure so we are in sync.
     }
 
     ESP_ERROR_CHECK(esp_mesh_set_rssi_threshold(&init_config->rssi_threshold));
