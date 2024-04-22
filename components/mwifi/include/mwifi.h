@@ -117,6 +117,7 @@ typedef struct {
     int8_t cnx_rssi;            /**< RSSI threshold above which the connection with a parent is considered strong */
     int8_t select_rssi;         /**< RSSI threshold for parent selection. Its value should be greater than switch_rssi */
     int8_t switch_rssi;         /**< RSSI threshold below which a node selects a parent with better RSSI */
+    mesh_rssi_threshold_t rssi_threshold; /**< Additional RSSI thresholds used internally by ESP-WIFI-MESH. Recommended to keep defaults. */
     uint8_t attempt_count;      /**< Parent selection fail times, if the scan times reach this value,
                                      device will disconnect with associated children and join self-healing */
     uint8_t monitor_ie_count;   /**< Allowed number of changes a parent node can introduce into its information element (IE),
@@ -142,35 +143,32 @@ typedef struct {
 #endif /**< CONFIG_MWIFI_RETRANSMIT_ENABLE */
 
 #define MWIFI_INIT_CONFIG_DEFAULT() { \
-        /**< .vote_percentage       =*/ CONFIG_MWIFI_VOTE_PERCENTAGE, \
-        /**< .vote_max_count        =*/ CONFIG_MWIFI_VOTE_MAX_COUNT, \
-        /**< .backoff_rssi          =*/ CONFIG_MWIFI_BACKOFF_RSSI, \
-        /**< .scan_min_count        =*/ CONFIG_MWIFI_SCAN_MINI_COUNT, \
-        /**< .root_conflicts_enable =*/ CONFIG_MWIFI_ROOT_CONFLICTS_ENABLE, \
-        /**< .root_healing_ms       =*/ CONFIG_MWIFI_ROOT_HEALING_MS, \
-        /**< .capacity_num          =*/ CONFIG_MWIFI_CAPACITY_NUM, \
-        /**< .max_layer_deprecated  =*/ 0, \
-        /**< .max_connection        =*/ CONFIG_MWIFI_MAX_CONNECTION, \
-        /**< .assoc_expire_ms       =*/ CONFIG_MWIFI_ASSOC_EXPIRE_MS, \
-        /**< .beacon_interval_ms    =*/ CONFIG_MWIFI_BEACON_INTERVAL_MS, \
-        /**< .passive_scan_ms       =*/ CONFIG_MWIFI_PASSIVE_SCAN_MS, \
-        /**< .monitor_duration_ms   =*/ CONFIG_MWIFI_MONITOR_DURATION_MS, \
-        /**< .cnx_rssi              =*/ CONFIG_MWIFI_CNX_RSSI, \
-        /**< .select_rssi           =*/ CONFIG_MWIFI_SELECT_RSSI, \
-        /**< .switch_rssi           =*/ CONFIG_MWIFI_SWITCH_RSSI, \
-        /**< .attempt_count         =*/ CONFIG_MWIFI_ATTEMPT_COUNT, \
-        /**< .monitor_ie_count      =*/ CONFIG_MWIFI_MONITOR_IE_COUNT, \
-        /**< .xon_qsize             =*/ CONFIG_MWIFI_XON_QSIZE, \
-        /**< .retransmit_enable     =*/ CONFIG_MWIFI_RETRANSMIT_ENABLE, \
-        /**< .data_drop_enable      =*/ CONFIG_MWIFI_DATA_DROP_ENABLE, \
-        /**< .max_layer             =*/ CONFIG_MWIFI_MAX_LAYER, \
-        /**< .topology              =*/ CONFIG_MWIFI_TOPOLOGY, \
-    }
-
-#define MWIFI_RSSI_THRESHOUD_DEFAULT() { \
-        /*!< .high  =*/	 CONFIG_MWIFI_RSSI_THRESHOUD_HIGH, \
-        /*!< medium =*/	 CONFIG_MWIFI_RSSI_THRESHOUD_MEDIUM, \
-        /*!< low    =*/  CONFIG_MWIFI_RSSI_THRESHOUD_LOW, \
+        .vote_percentage       = CONFIG_MWIFI_VOTE_PERCENTAGE, \
+        .vote_max_count        = CONFIG_MWIFI_VOTE_MAX_COUNT, \
+        .backoff_rssi          = CONFIG_MWIFI_BACKOFF_RSSI, \
+        .scan_min_count        = CONFIG_MWIFI_SCAN_MINI_COUNT, \
+        .root_conflicts_enable = CONFIG_MWIFI_ROOT_CONFLICTS_ENABLE, \
+        .root_healing_ms       = CONFIG_MWIFI_ROOT_HEALING_MS, \
+        .capacity_num          = CONFIG_MWIFI_CAPACITY_NUM, \
+        .max_layer_deprecated  = 0, \
+        .max_connection        = CONFIG_MWIFI_MAX_CONNECTION, \
+        .assoc_expire_ms       = CONFIG_MWIFI_ASSOC_EXPIRE_MS, \
+        .beacon_interval_ms    = CONFIG_MWIFI_BEACON_INTERVAL_MS, \
+        .passive_scan_ms       = CONFIG_MWIFI_PASSIVE_SCAN_MS, \
+        .monitor_duration_ms   = CONFIG_MWIFI_MONITOR_DURATION_MS, \
+        .cnx_rssi              = CONFIG_MWIFI_CNX_RSSI, \
+        .select_rssi           = CONFIG_MWIFI_SELECT_RSSI, \
+        .switch_rssi           = CONFIG_MWIFI_SWITCH_RSSI, \
+        .rssi_threshold.high   = CONFIG_MWIFI_RSSI_THRESHOLD_HIGH, \
+        .rssi_threshold.medium = CONFIG_MWIFI_RSSI_THRESHOLD_MEDIUM, \
+        .rssi_threshold.low    = CONFIG_MWIFI_RSSI_THRESHOLD_LOW, \
+        .attempt_count         = CONFIG_MWIFI_ATTEMPT_COUNT, \
+        .monitor_ie_count      = CONFIG_MWIFI_MONITOR_IE_COUNT, \
+        .xon_qsize             = CONFIG_MWIFI_XON_QSIZE, \
+        .retransmit_enable     = CONFIG_MWIFI_RETRANSMIT_ENABLE, \
+        .data_drop_enable      = CONFIG_MWIFI_DATA_DROP_ENABLE, \
+        .max_layer             = CONFIG_MWIFI_MAX_LAYER, \
+        .topology              = CONFIG_MWIFI_TOPOLOGY, \
     }
 
 /**
