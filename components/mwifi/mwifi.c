@@ -16,7 +16,7 @@
 #include "mdf_common.h"
 #include "mwifi.h"
 #ifndef CONFIG_MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
-#include "../third_party/miniz/miniz.h"
+#include "../miniz/miniz.h"
 #endif
 
 #define MWIFI_WAIVE_ROOT_INTERVAL  3 /**< When the root rssi is weak, MWIFI_WAIVE_ROOT_INTERVAL minutes will initiate a re root node selection */
