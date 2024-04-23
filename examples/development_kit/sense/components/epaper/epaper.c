@@ -23,7 +23,11 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 2, 0)
+#include "xtensa_api.h"
+#else
 #include "freertos/xtensa_api.h"
+#endif
 #include "freertos/task.h"
 #include "freertos/queue.h"
 #include "freertos/ringbuf.h"
