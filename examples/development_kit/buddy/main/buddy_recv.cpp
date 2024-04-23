@@ -96,7 +96,7 @@ static esp_err_t log_analysis(const uint8_t *mac, const uint8_t *data)
     return ESP_OK;
 }
 
-void print_system_info_timercb(void *timer)
+void print_system_info_timercb(TimerHandle_t timer)
 {
     char *buffer = NULL;
     int count = 0;
@@ -248,7 +248,7 @@ extern "C" mdf_err_t debug_recv_init()
                             NULL, CONFIG_MDF_TASK_DEFAULT_PRIOTY,
                             NULL, CONFIG_MDF_TASK_PINNED_TO_CORE);
 
-    TimerHandle_t timer = xTimerCreate("print_system_info", 1000 / portTICK_RATE_MS,
+    TimerHandle_t timer = xTimerCreate("print_system_info", 1000 / portTICK_PERIOD_MS,
                                        true, NULL, print_system_info_timercb);
     xTimerStart(timer, 0);
 

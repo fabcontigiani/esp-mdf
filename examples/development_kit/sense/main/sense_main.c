@@ -110,7 +110,7 @@ static void sense_deepsleep_set(void)
 
     /**< The i2c io should set to RTC GPIO befor the board entering deepsleep mode. */
     rtc_sensor_power_on();
-    vTaskDelay(100 / portTICK_RATE_MS);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
     rtc_sensor_io_init();
 
     /**< init_ulp_program */
@@ -173,7 +173,7 @@ static void button_press_3s_cb(void *arg)
 {
     MDF_LOGW("Erase information saved in flash");
     mdf_info_erase(MDF_SPACE_NAME);
-    vTaskDelay(500 / portTICK_RATE_MS);
+    vTaskDelay(500 / portTICK_PERIOD_MS);
     esp_restart();
 }
 
@@ -181,7 +181,7 @@ static void sense_device_init(void)
 {
     /**< initialize i2c bus and devices */
     sensor_power_on();
-    vTaskDelay(100 / portTICK_RATE_MS);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
     sensor_init();
 
     /**< initialize status led */
@@ -190,7 +190,7 @@ static void sense_device_init(void)
 #ifdef CONFIG_SENSE_USE_EPAPER_DISPLAY
     epaper_gpio_init();
     epaper_power_on();
-    vTaskDelay(100 / portTICK_RATE_MS);
+    vTaskDelay(100 / portTICK_PERIOD_MS);
     epaper_init();
     show_ulp_value();
 #endif /**< CONFIG_SENSE_USE_EPAPER_DISPLAY */
@@ -327,7 +327,7 @@ static mdf_err_t get_network_config(mwifi_init_config_t *init_config, mwifi_conf
                      i, MAC2STR((uint8_t *)mconfig_data->whitelist_data + i * sizeof(mconfig_whitelist_t)));
         }
 
-        MDF_ERROR_ASSERT(mconfig_chain_master(mconfig_data, 60000 / portTICK_RATE_MS));
+        MDF_ERROR_ASSERT(mconfig_chain_master(mconfig_data, 60000 / portTICK_PERIOD_MS));
     }
 
     MDF_FREE(mconfig_data);
@@ -338,7 +338,7 @@ static mdf_err_t get_network_config(mwifi_init_config_t *init_config, mwifi_conf
 /**
  * @brief Timed printing system information
  */
-static void show_system_info_timercb(void *timer)
+static void show_system_info_timercb(TimerHandle_t timer)
 {
     uint8_t primary                 = 0;
     wifi_second_chan_t second       = 0;
@@ -493,7 +493,7 @@ static void trigger_handle_task(void *arg)
             }
         }
 
-        vTaskDelay(500 / portTICK_RATE_MS);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
     } while (work_mode == SENSE_MESH_ACTIVE_MODE);
 
     sense_deep_sleep_start();
@@ -788,7 +788,7 @@ void app_main()
     xTaskCreate(request_handle_task, "request_handle", 8 * 1024,
                 NULL, CONFIG_MDF_TASK_DEFAULT_PRIOTY, NULL);
 
-    TimerHandle_t timer = xTimerCreate("show_system_info", 10000 / portTICK_RATE_MS,
+    TimerHandle_t timer = xTimerCreate("show_system_info", 10000 / portTICK_PERIOD_MS,
                                        true, NULL, show_system_info_timercb);
     xTimerStart(timer, 0);
 

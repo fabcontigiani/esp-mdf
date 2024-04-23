@@ -103,4 +103,12 @@ menu "MDF Mcommon"
         default 4 if MDF_LOG_LEVEL_DEBUG
         default 5 if MDF_LOG_LEVEL_VERBOSE
 
+        config MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
+        bool "Disable MINIZ component includes"
+        default n
+        help
+            Some MDF components contain code that depends on MINIZ component even if the 
+            compression is not used. This options disables such parts of code so the MINIZ 
+            component does not have to be included at all.
+            
 endmenu

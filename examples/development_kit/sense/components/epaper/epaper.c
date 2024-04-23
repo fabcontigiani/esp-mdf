@@ -705,7 +705,7 @@ void iot_epaper_wait_idle(epaper_handle_t dev)
     epaper_dev_t *device = (epaper_dev_t *) dev;
 
     while (gpio_get_level((gpio_num_t) device->pin.busy_pin) == 0) {      //0: busy, 1: idle
-        vTaskDelay(10 / portTICK_RATE_MS);
+        vTaskDelay(10 / portTICK_PERIOD_MS);
     }
 }
 

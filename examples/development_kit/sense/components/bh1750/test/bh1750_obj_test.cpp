@@ -32,12 +32,12 @@ extern "C" void bh1750_obj_test()
     int cnt = 5;
     while(cnt--){
         bh1750.set_mode(BH1750_ONETIME_4LX_RES);
-        vTaskDelay(30 / portTICK_RATE_MS);
+        vTaskDelay(30 / portTICK_PERIOD_MS);
         printf("bh1750 val(one time mode): %f\n", bh1750.read());
         bh1750.set_mode(BH1750_CONTINUE_4LX_RES);
-        vTaskDelay(30 / portTICK_RATE_MS);
+        vTaskDelay(30 / portTICK_PERIOD_MS);
         printf("bh1750 val(continuously mode): %f\n", bh1750.read());
-        vTaskDelay(200 / portTICK_RATE_MS);
+        vTaskDelay(200 / portTICK_PERIOD_MS);
     }
     printf("heap: %d\n", esp_get_free_heap_size());
 }

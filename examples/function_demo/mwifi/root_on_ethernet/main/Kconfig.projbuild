@@ -10,7 +10,7 @@ config MESH_ID
 config MESH_CHANNEL
     int "Mesh network channel"
     range 1 14
-    default 13
+    default 11
     help
         Mesh network channel.
 
@@ -47,13 +47,27 @@ config SERVER_PORT
                 bool "Internal EMAC"
                 help
                     Select internal Ethernet MAC controller.
-
+                    
             config EXAMPLE_USE_DM9051
                 bool "DM9051 Module"
                 select ETH_USE_SPI_ETHERNET
                 select ETH_SPI_ETHERNET_DM9051
                 help
                     Select external SPI-Ethernet module (DM9051).
+
+            config EXAMPLE_USE_KSZ8851SNL
+                bool "KSZ8851SNL Module"
+                select ETH_USE_SPI_ETHERNET
+                select ETH_SPI_ETHERNET_KSZ8851SNL
+                help
+                    Select external SPI-Ethernet module (KSZ8851SNL).
+
+            config EXAMPLE_USE_W5500
+                bool "W5500 Module"
+                select ETH_USE_SPI_ETHERNET
+                select ETH_SPI_ETHERNET_W5500
+                help
+                    Select external SPI-Ethernet module (W5500).
 
         endchoice
 
@@ -75,19 +89,37 @@ config SERVER_PORT
                     help
                         RTL8201F/SR8201F is a single port 10/100Mb Ethernet Transceiver with auto MDIX.
                         Goto http://www.corechip-sz.com/productsview.asp?id=22 for more information about it.
-
-                config EXAMPLE_ETH_PHY_LAN8720
-                    bool "LAN8720"
+    
+                config EXAMPLE_ETH_PHY_LAN87XX
+                    bool "LAN87xx"
                     help
+                        ESP-IDF v4.4 only supports LAN8720A.
+                        Below chips are supported with ESP-IDF v5+:
+                        LAN8710A is a small footprint MII/RMII 10/100 Ethernet Transceiver with HP Auto-MDIX and
+                            flexPWR® Technology.
                         LAN8720A is a small footprint RMII 10/100 Ethernet Transceiver with HP Auto-MDIX Support.
-                        Goto https://www.microchip.com/LAN8720A for more information about it.
-
+                        LAN8740A/LAN8741A is a small footprint MII/RMII 10/100 Energy Efficient Ethernet Transceiver
+                            with HP Auto-MDIX and flexPWR® Technology.
+                        LAN8742A is a small footprint RMII 10/100 Ethernet Transceiver with HP Auto-MDIX and
+                            flexPWR® Technology.
+                        Goto https://www.microchip.com for more information about them.
+    
                 config EXAMPLE_ETH_PHY_DP83848
                     bool "DP83848"
                     help
                         DP83848 is a single port 10/100Mb/s Ethernet Physical Layer Transceiver.
                         Goto http://www.ti.com/product/DP83848J for more information about it.
-            endchoice
+    
+                config EXAMPLE_ETH_PHY_KSZ80XX
+                    bool "KSZ80xx"
+                    help
+                        Requires ESP-IDF v5+
+                        With the KSZ80xx series, Microchip offers single-chip 10BASE-T/100BASE-TX
+                        Ethernet Physical Layer Tranceivers (PHY).
+                        The following chips are supported: KSZ8001, KSZ8021, KSZ8031, KSZ8041,
+                            KSZ8051, KSZ8061, KSZ8081, KSZ8091
+                        Goto https://www.microchip.com for more information about them.
+                endchoice
 
             config EXAMPLE_ETH_MDC_GPIO
                 int "SMI MDC GPIO number"

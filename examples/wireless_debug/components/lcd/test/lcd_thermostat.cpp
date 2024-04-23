@@ -344,7 +344,7 @@ void demo_sensor_read_task(void* arg)
 
         iot_bh1750_power_on(bh1750);
         iot_bh1750_set_measure_mode(bh1750, BH1750_ONETIME_4LX_RES);
-        vTaskDelay(30 / portTICK_RATE_MS);
+        vTaskDelay(30 / portTICK_PERIOD_MS);
 
         iot_bh1750_get_data(bh1750, &bh1750_data);
         printf("brightness: %f\n", bh1750_data);

@@ -13,11 +13,11 @@ CYAN='\033[0;36m'
 WHITE='\033[0;37m'
 
 source ./idf-path.txt
-# Contents of tools/idf-path.txt can be as simple as following line (without the octothorpe):
+# Contents of tools/idf-path.txt can be as simple as following 2 lines (without the octothorpe):
 #export IDF_PATH=/path/to/your/local/esp-idf
+#export MDF_PATH=/path/to/your/local/esp-mdf
 
 source "$IDF_PATH/export.sh"
-export MDF_PATH=../
 
 # 1. All basic examples for all supported targets
 
@@ -62,6 +62,5 @@ for dir in "${BUILD_DIRS[@]}";
 
 # Following have other requirements, may not be supported:
 #BUILD_DIRS+=("wireless_debug")
-#BUILD_DIRS+=("aliyun_linkkit/get-started" "aliyun_linkkit/mesh-with-aliyun" "aliyun_linkkit/test")
 #BUILD_DIRS+=("development_kit/buddy" "development_kit/button" "development_kit/light" "development_kit/sense")
 

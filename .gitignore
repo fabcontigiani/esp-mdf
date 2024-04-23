@@ -17,6 +17,8 @@ GPATH
 
 # eclipse setting
 .settings
+.cproject
+.project
 
 # sublime
 .tags

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <inttypes.h>
 #include "mdf_common.h"
 #include "mwifi.h"
 
@@ -31,7 +32,7 @@ static void root_task(void *arg)
 
     for (int i = 0;; ++i) {
         if (!mwifi_is_started()) {
-            vTaskDelay(500 / portTICK_RATE_MS);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
             continue;
         }
 
@@ -65,7 +66,7 @@ static void node_read_task(void *arg)
 
     for (;;) {
         if (!mwifi_is_connected()) {
-            vTaskDelay(500 / portTICK_RATE_MS);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
             continue;
         }
 
@@ -94,7 +95,7 @@ void node_write_task(void *arg)
 
     for (;;) {
         if (!mwifi_is_connected()) {
-            vTaskDelay(500 / portTICK_RATE_MS);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
             continue;
         }
 
@@ -102,7 +103,7 @@ void node_write_task(void *arg)
         ret = mwifi_write(NULL, &data_type, data, size, true);
         MDF_ERROR_CONTINUE(ret != MDF_OK, "mwifi_write, ret: %x", ret);
 
-        vTaskDelay(1000 / portTICK_RATE_MS);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 
     MDF_LOGW("Node write task is exit");
@@ -114,7 +115,7 @@ void node_write_task(void *arg)
 /**
  * @brief Timed printing system information
  */
-static void print_system_info_timercb(void *timer)
+static void print_system_info_timercb(TimerHandle_t timer)
 {
     uint8_t primary                 = 0;
     wifi_second_chan_t second       = 0;
@@ -128,7 +129,7 @@ static void print_system_info_timercb(void *timer)
     esp_mesh_get_parent_bssid(&parent_bssid);
 
     MDF_LOGI("System information, channel: %d, layer: %d, self mac: " MACSTR ", parent bssid: " MACSTR
-             ", parent rssi: %d, node num: %d, free heap: %u", primary,
+             ", parent rssi: %d, node num: %d, free heap: %"PRIu32, primary,
              esp_mesh_get_layer(), MAC2STR(sta_mac), MAC2STR(parent_bssid.addr),
              mwifi_get_parent_rssi(), esp_mesh_get_total_node_num(), esp_get_free_heap_size());
 
@@ -182,7 +183,7 @@ static mdf_err_t wifi_init()
  */
 static mdf_err_t event_loop_cb(mdf_event_loop_t event, void *ctx)
 {
-    MDF_LOGI("event_loop_cb, event: %d", event);
+    MDF_LOGI("event_loop_cb, event: %"PRIu32, event);
 
     switch (event) {
         case MDF_EVENT_MWIFI_STARTED:
@@ -241,7 +242,7 @@ void app_main()
                     NULL, CONFIG_MDF_TASK_DEFAULT_PRIOTY, NULL);
     }
 
-    TimerHandle_t timer = xTimerCreate("print_system_info", 10000 / portTICK_RATE_MS,
+    TimerHandle_t timer = xTimerCreate("print_system_info", 10000 / portTICK_PERIOD_MS,
                                        true, NULL, print_system_info_timercb);
     xTimerStart(timer, 0);
 }

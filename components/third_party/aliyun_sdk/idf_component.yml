@@ -1,4 +1,0 @@
-dependencies:
-  espressif/coap:
-    rules:
-      - if: "idf_version >=5.0"

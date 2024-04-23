@@ -31,7 +31,22 @@
 #include "mbedtls/dhm.h"
 #include "mbedtls/md5.h"
 #include "mbedtls/sha256.h"
+
+#ifdef CONFIG_IDF_TARGET_ESP32C3
+#include "esp32c3/rom/crc.h"
+#endif
+
+#ifdef CONFIG_IDF_TARGET_ESP32S2
+#include "esp32s2/rom/crc.h"
+#endif
+
+#ifdef CONFIG_IDF_TARGET_ESP32S3
+#include "esp32s3/rom/crc.h"
+#endif
+
+#ifdef CONFIG_IDF_TARGET_ESP32
 #include "esp32/rom/crc.h"
+#endif
 
 #include "mdf_common.h"
 #include "mdf_event_loop.h"
@@ -172,8 +187,8 @@ static void combine_ap_mesh_password(uint8_t dst[64], const uint8_t *ap_password
     uint8_t ap_sha256[32] = { 0 };
     uint8_t mesh_sha256[32] = { 0 };
 
-    mbedtls_sha256_ret(ap_password, strlen((const char *)ap_password), ap_sha256, 0);
-    mbedtls_sha256_ret(mesh_password, strlen((const char *)mesh_password), mesh_sha256, 0);
+    mbedtls_sha256(ap_password, strlen((const char *)ap_password), ap_sha256, 0);
+    mbedtls_sha256(mesh_password, strlen((const char *)mesh_password), mesh_sha256, 0);
 
     for (int i = 0; i < 32; i++) {
         mesh_sha256[i] ^= ap_sha256[i];
@@ -433,7 +448,7 @@ static void blufi_wifi_event_handler(void *arg, esp_event_base_t event_base, int
 }
 #else
 
-static void mconfig_stop_mesh_cb(xTimerHandle timer)
+static void mconfig_stop_mesh_cb(TimerHandle_t timer)
 {
     esp_mesh_stop();
     xTimerDelete(timer, 0);
@@ -518,7 +533,7 @@ static void blufi_mesh_event_handler(void *arg, esp_event_base_t event_base, int
                 ret = esp_ble_gap_disconnect(g_spp_remote_bda);
                 MDF_ERROR_BREAK(ret != ESP_OK, "<%s> esp_ble_gap_disconnect", mdf_err_to_name(ret));
 
-                xTimerHandle timer = xTimerCreate("stop_mesh", 1, pdFALSE, NULL, mconfig_stop_mesh_cb);
+                TimerHandle_t timer = xTimerCreate("stop_mesh", 1, pdFALSE, NULL, mconfig_stop_mesh_cb);
                 assert(xTimerStart(timer, 0) == pdPASS);
             }
 
@@ -532,7 +547,7 @@ static void blufi_mesh_event_handler(void *arg, esp_event_base_t event_base, int
             ret = esp_ble_gap_disconnect(g_spp_remote_bda);
             MDF_ERROR_BREAK(ret != ESP_OK, "<%s> esp_ble_gap_disconnect", mdf_err_to_name(ret));
 
-            xTimerHandle timer = xTimerCreate("stop_mesh", 1, pdFALSE, NULL, mconfig_stop_mesh_cb);
+            TimerHandle_t timer = xTimerCreate("stop_mesh", 1, pdFALSE, NULL, mconfig_stop_mesh_cb);
             assert(xTimerStart(timer, 0) == pdPASS);
         }
         break;
@@ -730,8 +745,8 @@ static void mconfig_blufi_event_callback(esp_blufi_cb_event_t event, esp_blufi_c
             break;
 
         case ESP_BLUFI_EVENT_RECV_MDF_CUSTOM: {
-            MDF_LOGD("data_len: %d, custom_data: %.*s",
-                     param->custom_data.data_len, param->custom_data.data_len, param->custom_data.data);
+            MDF_LOGD("data_len: %"PRIu32", custom_data: %.*s",
+                     param->custom_data.data_len, (int)param->custom_data.data_len, param->custom_data.data);
 
             mconfig_ble_connect_timer_delete();
             mconfig_ble_connect_timer_create();
@@ -744,10 +759,10 @@ static void mconfig_blufi_event_callback(esp_blufi_cb_event_t event, esp_blufi_c
         case ESP_BLUFI_EVENT_RECV_CUSTOM_DATA: {
             bool config_flag = true;
 
-            MDF_LOGV("param->custom_data.data_len: %d, param->custom_data.data: %s",
+            MDF_LOGV("param->custom_data.data_len: %"PRIu32", param->custom_data.data: %s",
                      param->custom_data.data_len, param->custom_data.data);
             MDF_ERROR_BREAK(param->custom_data.data_len < 6,
-                            "param->custom_data.data_len: %d", param->custom_data.data_len);
+                            "param->custom_data.data_len: %"PRIu32, param->custom_data.data_len);
 
             mconfig_ble_connect_timer_delete();
 
@@ -1101,13 +1116,18 @@ mdf_err_t mconfig_blufi_init(const mconfig_blufi_config_t *cfg)
     ret = esp_bt_controller_enable(ESP_BT_MODE_BLE);
     MDF_ERROR_CHECK(ret != ESP_OK, ret, "Enable bt controller");
 
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 2, 0)
+    esp_bluedroid_config_t bluedroid_config = BT_BLUEDROID_INIT_CONFIG_DEFAULT();
+    ret = esp_bluedroid_init_with_cfg(&bluedroid_config);
+#else
     ret = esp_bluedroid_init();
+#endif
     MDF_ERROR_CHECK(ret != ESP_OK, ret, "Initialize bluedroid");
 
     ret = esp_bluedroid_enable();
     MDF_ERROR_CHECK(ret != ESP_OK, ret, "Enable bluedroid");
 
-    vTaskDelay(esp_random() % 100 / portTICK_RATE_MS);
+    vTaskDelay(esp_random() % 100 / portTICK_PERIOD_MS);
 
     ret = esp_ble_gap_register_callback(mconfig_blufi_gap_event_handler);
     MDF_ERROR_CHECK(ret != ESP_OK, ret, "BLE gap register callback");

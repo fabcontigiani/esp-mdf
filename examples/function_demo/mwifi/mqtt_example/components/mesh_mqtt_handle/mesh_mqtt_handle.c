@@ -20,7 +20,7 @@
 #include "mwifi.h"
 
 static struct mesh_mqtt {
-    xQueueHandle queue; /**< mqtt receive data queue */
+    QueueHandle_t queue; /**< mqtt receive data queue */
     esp_mqtt_client_handle_t client; /**< mqtt client */
     bool is_connected;
     uint8_t addr[MWIFI_ADDR_LEN];
@@ -165,7 +165,7 @@ _exit:
     return request;
 }
 
-static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
+static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 {
     switch (event->event_id) {
         case MQTT_EVENT_CONNECTED:
@@ -223,6 +223,13 @@ static esp_err_t mqtt_event_handler(esp_mqtt_event_handle_t event)
 
     return ESP_OK;
 }
+
+#ifdef IDF_V5
+static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data) {
+    ESP_LOGD(TAG, "Event dispatched from event loop base=%s, event_id=%"PRId32, base, event_id);
+    mqtt_event_handler_cb(event_data);
+}
+#endif
 
 bool mesh_mqtt_is_connect()
 {
@@ -385,19 +392,30 @@ mdf_err_t mesh_mqtt_start(char *url)
     MDF_PARAM_CHECK(url);
     MDF_ERROR_CHECK(g_mesh_mqtt.client != NULL, MDF_ERR_INVALID_STATE, "MQTT client is already running");
 
+#ifdef IDF_V4
     esp_mqtt_client_config_t mqtt_cfg = {
         .uri = url,
-        .event_handle = mqtt_event_handler,
+        .event_handle = mqtt_event_handler_cb,
         // .client_cert_pem = (const char *)client_cert_pem_start,
         // .client_key_pem = (const char *)client_key_pem_start,
     };
+#elif defined IDF_V5
+    esp_mqtt_client_config_t mqtt_cfg = {
+            .broker.address.uri = url,
+			//.event_handle = mqtt_event_handler,
+            // .client_cert_pem = (const char *)client_cert_pem_start,
+            // .client_key_pem = (const char *)client_key_pem_start,
+        };
+#endif
     MDF_ERROR_ASSERT(esp_read_mac(g_mesh_mqtt.addr, ESP_MAC_WIFI_STA));
     snprintf(g_mesh_mqtt.publish_topic, sizeof(g_mesh_mqtt.publish_topic), publish_topic_template, MAC2STR(g_mesh_mqtt.addr));
     snprintf(g_mesh_mqtt.topo_topic, sizeof(g_mesh_mqtt.topo_topic), topo_topic_template, MAC2STR(g_mesh_mqtt.addr));
     g_mesh_mqtt.queue = xQueueCreate(3, sizeof(mesh_mqtt_data_t *));
     g_mesh_mqtt.client = esp_mqtt_client_init(&mqtt_cfg);
     MDF_ERROR_ASSERT(esp_mqtt_client_start(g_mesh_mqtt.client));
-
+#ifdef IDF_V5
+    MDF_ERROR_ASSERT(esp_mqtt_client_register_event(g_mesh_mqtt.client, MQTT_EVENT_ANY, mqtt_event_handler, g_mesh_mqtt.client));
+#endif
     return MDF_OK;
 }
 

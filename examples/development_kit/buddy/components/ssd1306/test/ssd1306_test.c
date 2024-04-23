@@ -125,7 +125,7 @@ static void ssd1306_test_task(void *pvParameters)
 
     while (1) {
         ssd1306_show_time(dev);
-        vTaskDelay(100 / portTICK_RATE_MS);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 
     iot_ssd1306_delete(dev, true);
@@ -178,10 +178,10 @@ static void ssd1306_test()
     iot_tp_add_cb(touchpad_dev1, TOUCHPAD_CB_RELEASE, tap_cb, touchpad_dev1);
 //
 //
-//    vTaskDelay((30 * 1000) / portTICK_RATE_MS);
+//    vTaskDelay((30 * 1000) / portTICK_PERIOD_MS);
 //    ESP_LOGI(TAG, "touchpad 0 deleted");
 //    touchpad_delete(touchpad_dev0);
-//    vTaskDelay((30 * 1000) / portTICK_RATE_MS);
+//    vTaskDelay((30 * 1000) / portTICK_PERIOD_MS);
 //    ESP_LOGI(TAG, "touchpad 1 deleted");
 //    touchpad_delete(touchpad_dev1);
 }

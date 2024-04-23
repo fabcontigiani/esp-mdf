@@ -137,7 +137,7 @@ static void epaper_show_task(void *arg)
         hts221_get_humidity(&hum);
         epaper_show_status((float)hum / 10, (float)temp / 10, lum);
 
-        vTaskDelay(60 * 1000 / portTICK_RATE_MS);
+        vTaskDelay(60 * 1000 / portTICK_PERIOD_MS);
     }
 }
 

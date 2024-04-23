@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <inttypes.h>
 #include "mlink_utils.h"
 
 static const char *TAG = "mlink_utils";
@@ -23,7 +24,7 @@ uint8_t *mlink_mac_str2hex(const char *mac_str, uint8_t *mac_hex)
 
     uint32_t mac_data[6] = {0};
 
-    sscanf(mac_str, "%02x%02x%02x%02x%02x%02x",
+    sscanf(mac_str, "%02"PRIx32"%02"PRIx32"%02"PRIx32"%02"PRIx32"%02"PRIx32"%02"PRIx32,
            mac_data, mac_data + 1, mac_data + 2, mac_data + 3, mac_data + 4, mac_data + 5);
 
     for (int i = 0; i < 6; i++) {

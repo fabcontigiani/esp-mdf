@@ -15,6 +15,7 @@
 #include "mdf_common.h"
 #include "mwifi.h"
 #include "driver/uart.h"
+#include "cJSON.h"
 
 // #define MEMORY_DEBUG
 #define BUF_SIZE 512
@@ -100,7 +101,7 @@ static void uart_handle_task(void *arg)
          * @brief  Convert mac from string format to binary
          */
         do {
-            uint32_t mac_data[MWIFI_ADDR_LEN] = {0};
+            unsigned int mac_data[MWIFI_ADDR_LEN] = {0};
             sscanf(json_dest_addr->valuestring, MACSTR,
                    mac_data, mac_data + 1, mac_data + 2,
                    mac_data + 3, mac_data + 4, mac_data + 5);
@@ -142,7 +143,7 @@ static void node_read_task(void *arg)
 
     for (;;) {
         if (!mwifi_is_connected() && !(mwifi_is_started() && esp_mesh_is_root())) {
-            vTaskDelay(500 / portTICK_RATE_MS);
+            vTaskDelay(500 / portTICK_PERIOD_MS);
             continue;
         }
 
@@ -170,7 +171,7 @@ static void node_read_task(void *arg)
 /**
  * @brief printing system information
  */
-static void print_system_info_timercb(void *timer)
+static void print_system_info_timercb(TimerHandle_t timer)
 {
     uint8_t primary                 = 0;
     wifi_second_chan_t second       = 0;
@@ -184,7 +185,7 @@ static void print_system_info_timercb(void *timer)
     esp_mesh_get_parent_bssid(&parent_bssid);
 
     MDF_LOGI("System information, channel: %d, layer: %d, self mac: " MACSTR ", parent bssid: " MACSTR
-             ", parent rssi: %d, node num: %d, free heap: %u", primary,
+             ", parent rssi: %d, node num: %d, free heap: %"PRIu32, primary,
              esp_mesh_get_layer(), MAC2STR(sta_mac), MAC2STR(parent_bssid.addr),
              mwifi_get_parent_rssi(), esp_mesh_get_total_node_num(), esp_get_free_heap_size());
 
@@ -239,7 +240,7 @@ static mdf_err_t wifi_init()
  */
 static mdf_err_t event_loop_cb(mdf_event_loop_t event, void *ctx)
 {
-    MDF_LOGI("event_loop_cb, event: %d", event);
+    MDF_LOGI("event_loop_cb, event: %"PRIu32, event);
 
     switch (event) {
         case MDF_EVENT_MWIFI_STARTED:
@@ -307,7 +308,7 @@ void app_main()
                 NULL, CONFIG_MDF_TASK_DEFAULT_PRIOTY, NULL);
 
     /* Periodic print system information */
-    TimerHandle_t timer = xTimerCreate("print_system_info", 10000 / portTICK_RATE_MS,
+    TimerHandle_t timer = xTimerCreate("print_system_info", 10000 / portTICK_PERIOD_MS,
                                        true, NULL, print_system_info_timercb);
     xTimerStart(timer, 0);
 

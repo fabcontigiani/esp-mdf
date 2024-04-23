@@ -67,7 +67,7 @@ enum light_channel {
 };
 
 static const char *TAG                    = "button_driver";
-static xQueueHandle g_event_queue         = NULL;
+static QueueHandle_t g_event_queue         = NULL;
 static light_handle_t g_button_led_handle = NULL;
 static bool g_button_led_blink_flag       = false;
 static button_key_t g_button_key[BUTTON_KEY_NUM]               = {0x0};
@@ -184,7 +184,7 @@ uint8_t button_battery_get_electricity()
     return electricity;
 }
 
-static void button_is_charging_timercb(void *timer)
+static void button_is_charging_timercb(TimerHandle_t timer)
 {
     if (!button_usb_is_connected()) {
         mdf_event_loop_send(MDF_EVENT_BUTTON_CHARGING_STOPED, NULL);
@@ -218,7 +218,7 @@ mdf_err_t button_battery_init()
 
     gpio_set_level(BUTTON_GPIO_RS_FLIPFLOP_SET, 0);
     gpio_set_level(BUTTON_GPIO_RS_FLIPFLOP_RST, 1);
-    vTaskDelay(10 / portTICK_RATE_MS);
+    vTaskDelay(10 / portTICK_PERIOD_MS);
     gpio_set_level(BUTTON_GPIO_RS_FLIPFLOP_RST, 0);
 
     /**< Check TP is burned into eFuse */
@@ -246,7 +246,7 @@ mdf_err_t button_battery_init()
     MDF_ERROR_CHECK(ret != MDF_OK, ret, "Characterize an ADC at a particular attenuation");
 
     if (button_usb_is_connected()) {
-        TimerHandle_t timer = xTimerCreate("button_is_charging", 500 / portTICK_RATE_MS,
+        TimerHandle_t timer = xTimerCreate("button_is_charging", 500 / portTICK_PERIOD_MS,
                                            true, NULL, button_is_charging_timercb);
         xTimerStart(timer, 0);
     }
@@ -283,7 +283,7 @@ static void button_get_value_task(void *arg)
         MDF_LOGD("gpio_num: %d, level: %d", g_button_key[i].gpio_num, gpio_get_level(g_button_key[i].gpio_num));
 
         if (gpio_get_level(g_button_key[i].gpio_num)) {
-            g_button_key[i].backup_tickcount -= 500 * portTICK_RATE_MS;
+            g_button_key[i].backup_tickcount -= 500 * portTICK_PERIOD_MS;
             g_button_key[i].push   = true;
             g_button_key[i].status = BUTTON_KEY_NONE;
             mdf_event_loop_send(MDF_EVENT_BUTTON_KEY_PUSH, (void *)i);
@@ -300,11 +300,11 @@ static void button_get_value_task(void *arg)
         key_index                = -1;
         button_key_t *button_key = NULL;
 
-        if (!xQueueReceive(g_event_queue, &key_index, 1000 / portTICK_RATE_MS)) {
+        if (!xQueueReceive(g_event_queue, &key_index, 1000 / portTICK_PERIOD_MS)) {
             for (int i = 0; i < 4; ++i) {
                 button_key = g_button_key + i;
                 uint8_t execution_time_ms = 10;
-                uint32_t spent_timer_ms   = (xTaskGetTickCount() - button_key->backup_tickcount) * portTICK_RATE_MS;
+                uint32_t spent_timer_ms   = (xTaskGetTickCount() - button_key->backup_tickcount) * portTICK_PERIOD_MS;
 
                 if (spent_timer_ms > MDF_EVENT_BUTTON_KEY_LONG_PRESS_MS - execution_time_ms
                         && button_key->push == true) {
@@ -334,7 +334,7 @@ static void button_get_value_task(void *arg)
 
         button_key = g_button_key + key_index;
         int key_level = gpio_get_level(button_key->gpio_num);
-        vTaskDelay(50 / portTICK_RATE_MS);
+        vTaskDelay(50 / portTICK_PERIOD_MS);
 
         if (key_level != gpio_get_level(button_key->gpio_num)) {
             continue;
@@ -354,7 +354,7 @@ static void button_get_value_task(void *arg)
 
         if ((button_key->push && button_key->release)
                 || (button_key->status == BUTTON_KEY_LONG_PRESS_PUSH)) {
-            uint32_t spent_timer_ms = (xTaskGetTickCount() - button_key->backup_tickcount) * portTICK_RATE_MS;
+            uint32_t spent_timer_ms = (xTaskGetTickCount() - button_key->backup_tickcount) * portTICK_PERIOD_MS;
             button_key->push    = false;
             button_key->release = false;
 

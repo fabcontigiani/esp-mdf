@@ -52,7 +52,7 @@ void button_test()
     iot_button_set_evt_cb(btn_handle, BUTTON_CB_PUSH, button_tap_cb, "PUSH");
     iot_button_set_evt_cb(btn_handle, BUTTON_CB_RELEASE, button_tap_cb, "RELEASE");
     iot_button_set_evt_cb(btn_handle, BUTTON_CB_TAP, button_tap_cb, "TAP");
-    iot_button_set_serial_cb(btn_handle, 2, 1000 / portTICK_RATE_MS, button_tap_cb, "SERIAL");
+    iot_button_set_serial_cb(btn_handle, 2, 1000 / portTICK_PERIOD_MS, button_tap_cb, "SERIAL");
 
     iot_button_add_custom_cb(btn_handle, 2, button_press_2s_cb, NULL);
     iot_button_add_custom_cb(btn_handle, 5, button_press_5s_cb, NULL);

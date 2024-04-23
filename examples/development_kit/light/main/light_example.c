@@ -152,7 +152,7 @@ FREE_MEM:
     vTaskDelete(NULL);
 }
 
-static void delay_func_timer_cb(void *timer)
+static void delay_func_timer_cb(TimerHandle_t timer)
 {
     char *data = (char *)pvTimerGetTimerID(timer);
 

@@ -151,9 +151,9 @@ uint32_t lcd_init(lcd_conf_t *lcd_conf, spi_device_handle_t *spi_wr_dev, lcd_dc_
         gpio_pad_select_gpio(lcd_conf->pin_num_rst);
         gpio_set_direction(lcd_conf->pin_num_rst, GPIO_MODE_OUTPUT);
         gpio_set_level(lcd_conf->pin_num_rst, (lcd_conf->rst_active_level) & 0x1);
-        vTaskDelay(100 / portTICK_RATE_MS);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
         gpio_set_level(lcd_conf->pin_num_rst, (~(lcd_conf->rst_active_level)) & 0x1);
-        vTaskDelay(100 / portTICK_RATE_MS);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 
     if (lcd_conf->init_spi_bus) {
@@ -209,7 +209,7 @@ uint32_t lcd_init(lcd_conf_t *lcd_conf, spi_device_handle_t *spi_wr_dev, lcd_dc_
         lcd_data(*spi_wr_dev, lcd_init_cmds[cmd].data, lcd_init_cmds[cmd].databytes & 0x1F, dc);
 
         if (lcd_init_cmds[cmd].databytes & 0x80) {
-            vTaskDelay(100 / portTICK_RATE_MS);
+            vTaskDelay(100 / portTICK_PERIOD_MS);
         }
 
         cmd++;

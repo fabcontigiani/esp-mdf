@@ -33,7 +33,7 @@ extern "C" void hts221_obj_test()
         printf("humidity value is: %2.2f\n", hts221.read_humidity());
         printf("temperature value is: %2.2f\n", hts221.read_temperature());
         printf("**************************************************\n");
-        vTaskDelay(1000 / portTICK_RATE_MS);
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
         printf("heap: %d\n", esp_get_free_heap_size());
     }
 }

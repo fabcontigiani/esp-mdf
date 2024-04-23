@@ -203,7 +203,7 @@ void app_main()
     /**
      * @brief Periodically print system information.
      */
-    TimerHandle_t timer = xTimerCreate("show_system_info", 10000 / portTICK_RATE_MS,
+    TimerHandle_t timer = xTimerCreate("show_system_info", 10000 / portTICK_PERIOD_MS,
                                        true, NULL, show_system_info_timercb);
     xTimerStart(timer, 0);
 }
@@ -221,7 +221,7 @@ void app_main()
  - `mwifi_init(&init_config)`：初始化 ESP-WIFI-MESH 协议栈
  - `mwifi_set_config(&ap_config)`：设置 ESP-WIFI-MESH 参数
  - `mwifi_start()`：使能 ESP-WIFI-MESH
- - `xTimerCreate("show_system_info", 10000 / portTICK_RATE_MS, true, NULL, show_system_info_timercb)`：新建 Timer 用于周期打印系统信息
+ - `xTimerCreate("show_system_info", 10000 / portTICK_PERIOD_MS, true, NULL, show_system_info_timercb)`：新建 Timer 用于周期打印系统信息
 
 ##### 1. 初始化 Wi-Fi 协议栈
 
@@ -295,8 +295,8 @@ static mdf_err_t wifi_init()
  - `esp_wifi_set_promiscuous_rx_cb(wifi_sniffer_cb)`：注册 sniffer 回调函数，监听环境中的 IEEE802.11 Wi-Fi 数据包
  - `scan_mesh_device`：扫描环境中的主设备
  - `mespnow_write(MESPNOW_TRANS_PIPE_MCONFIG, dest_addr, espnow_data, espnow_size, portMAX_DELAY)`：向主设备请求网络配置信息
- - `mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, dest_addr, espnow_data, &espnow_size, 1000 / portTICK_RATE_MS)`：从主设备获取加密后的网络配置信息
- - `mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, whitelist_compress_data, (size_t *)&whitelist_compress_size, 10000 / portTICK_RATE_MS)`：从主设备接收压缩、加密后白名单列表
+ - `mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, dest_addr, espnow_data, &espnow_size, 1000 / portTICK_PERIOD_MS)`：从主设备获取加密后的网络配置信息
+ - `mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, whitelist_compress_data, (size_t *)&whitelist_compress_size, 10000 / portTICK_PERIOD_MS)`：从主设备接收压缩、加密后白名单列表
  - `mconfig_queue_write(&chain_data->mconfig_data, 0)`：发送网络配置信息到队列，同时标志该设备网络配置完成
 
 **链式配网主设备：**
@@ -304,7 +304,7 @@ static mdf_err_t wifi_init()
 包含以下代码：
 
  - `esp_wifi_set_vendor_ie(true, WIFI_VND_IE_TYPE_BEACON, WIFI_VND_IE_ID_1, &ie_data)`：设置 Beacon 包中的 IEEE802.11 供应商特定信息元素用以标识该设备是链式配网主设备
- - `mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, espnow_data, &espnow_size, MCONFIG_CHAIN_EXIT_DELAY / portTICK_RATE_MS)`：接收从设备发来的网络配置请求
+ - `mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, espnow_data, &espnow_size, MCONFIG_CHAIN_EXIT_DELAY / portTICK_PERIOD_MS)`：接收从设备发来的网络配置请求
  - `mconfig_device_verify(mconfig_data->whitelist_data, mconfig_data->whitelist_size, src_addr, pubkey_pem)`：检测该从设备是否在白名单中，不在白名单中的设备无法加入该 ESP-WIFI-MESH 网络
  - `mespnow_write(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, espnow_data, (MCONFIG_RSA_CIPHERTEXT_SIZE - MCONFIG_RSA_PLAINTEXT_MAX_SIZE) + sizeof(mconfig_chain_data_t), portMAX_DELAY)`：向从设备发送加密后的网络配置信息
  - `mespnow_write(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, whitelist_compress_data, whitelist_compress_size, portMAX_DELAY);`：向从设备发送压缩、加密后的白名单列表

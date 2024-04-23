@@ -207,7 +207,7 @@ void app_main()
     /**
      * @brief Periodically print system information.
      */
-    TimerHandle_t timer = xTimerCreate("show_system_info", 10000 / portTICK_RATE_MS,
+    TimerHandle_t timer = xTimerCreate("show_system_info", 10000 / portTICK_PERIOD_MS,
                                        true, NULL, show_system_info_timercb);
     xTimerStart(timer, 0);
 }
@@ -225,7 +225,7 @@ Including the following code:
  - `mwifi_init(&init_config)`: initializes ESP-WIFI-MESH stack.
  - `mwifi_set_config(&ap_config)`: sets parameters for ESP-WIFI-MESH.
  - `mwifi_start()`: enables ESP-WIFI-MESH.
- - `xTimerCreate("show_system_info", 10000 / portTICK_RATE_MS, true, NULL, show_system_info_timercb)`: creates a Timer to print system information periodically.
+ - `xTimerCreate("show_system_info", 10000 / portTICK_PERIOD_MS, true, NULL, show_system_info_timercb)`: creates a Timer to print system information periodically.
 
 ##### 1. Initialize Wi-Fi Stack
 
@@ -299,8 +299,8 @@ Including the following code:
  - `esp_wifi_set_promiscuous_rx_cb(wifi_sniffer_cb)`: registers sniffer callback function, and listens for IEEE802.11 Wi-Fi packets nearby.
  - `scan_mesh_device`: scans surrounding masters. 
  - `mespnow_write(MESPNOW_TRANS_PIPE_MCONFIG, dest_addr, espnow_data, espnow_size, portMAX_DELAY)`: sends the request for network configuration information to a master.
- - `mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, dest_addr, espnow_data, &espnow_size, 1000 / portTICK_RATE_MS)`: receives encrypted network configuration information from the master.
- - `mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, whitelist_compress_data, (size_t *)&whitelist_compress_size, 10000 / portTICK_RATE_MS)`: receives compressed and encrypted whitelist from the master.
+ - `mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, dest_addr, espnow_data, &espnow_size, 1000 / portTICK_PERIOD_MS)`: receives encrypted network configuration information from the master.
+ - `mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, whitelist_compress_data, (size_t *)&whitelist_compress_size, 10000 / portTICK_PERIOD_MS)`: receives compressed and encrypted whitelist from the master.
  - `mconfig_queue_write(&chain_data->mconfig_data, 0)`: sends network configuration information to the queue and marks the completion of the network configuration of the device.
 
 **Master:**
@@ -308,7 +308,7 @@ Including the following code:
 Including the following code:
 
  - `esp_wifi_set_vendor_ie(true, WIFI_VND_IE_TYPE_BEACON, WIFI_VND_IE_ID_1, &ie_data)`: sets IEEE802.11 vendor information element into beacon frames to identify this device as the master in mesh network configuration chain.
- - `mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, espnow_data, &espnow_size, MCONFIG_CHAIN_EXIT_DELAY / portTICK_RATE_MS)`: receives network configuration request from a slave.
+ - `mespnow_read(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, espnow_data, &espnow_size, MCONFIG_CHAIN_EXIT_DELAY / portTICK_PERIOD_MS)`: receives network configuration request from a slave.
  - `mconfig_device_verify(mconfig_data->whitelist_data, mconfig_data->whitelist_size, src_addr, pubkey_pem)`: checks whether this slave is whitelisted, if not, the device cannot connect to this ESP-WIFI-MESH network.
  - `mespnow_write(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, espnow_data, (MCONFIG_RSA_CIPHERTEXT_SIZE - MCONFIG_RSA_PLAINTEXT_MAX_SIZE) + sizeof(mconfig_chain_data_t), portMAX_DELAY)`: sends encrypted network configuration information to the slave device.
  - `mespnow_write(MESPNOW_TRANS_PIPE_MCONFIG, src_addr, whitelist_compress_data, whitelist_compress_size, portMAX_DELAY);`: sends compressed and encrypted whitelist to the slave device.

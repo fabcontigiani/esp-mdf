@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <inttypes.h>
 #include "mlink.h"
 #include "mwifi.h"
 #include "mconfig_chain.h"
@@ -278,7 +279,7 @@ static mdf_err_t mlink_handle_get_info(mlink_handle_data_t *handle_data)
         mlink_json_pack(&handle_data->resp_data, "position", position);
     }
 
-    sprintf(tmp_str, "%d", g_device_info->tid);
+    sprintf(tmp_str, "%"PRIu32, g_device_info->tid);
     esp_mesh_get_parent_bssid(&parent_bssid);
 
     if (esp_mesh_get_layer() == MESH_ROOT) {
@@ -515,11 +516,16 @@ static mdf_err_t mlink_handle_add_device(mlink_handle_data_t *handle_data)
     mconfig_data_t *mconfig_data = MDF_CALLOC(1, sizeof(mconfig_data_t));
     MDF_ERROR_GOTO(!mconfig_data, EXIT, "");
 
+#pragma GCC diagnostic push
+#if     __GNUC__ >= 9
+#pragma GCC diagnostic ignored "-Waddress-of-packed-member"
+#endif
     ret = mwifi_get_config(&mconfig_data->config);
     MDF_ERROR_GOTO(ret != MDF_OK, EXIT, "<%s> Get the configuration of the AP", mdf_err_to_name(ret));
 
     ret = mwifi_get_init_config(&mconfig_data->init_config);
     MDF_ERROR_GOTO(ret != MDF_OK, EXIT, "<%s> Get Mwifi init configuration", mdf_err_to_name(ret));
+#pragma GCC diagnostic pop
 
     ret = mlink_json_parse(handle_data->req_data, "whitelist", &whitelist_num);
     MDF_ERROR_GOTO(ret != MDF_OK, EXIT, "Parse the json formatted string: whitelist");
@@ -542,7 +548,7 @@ static mdf_err_t mlink_handle_add_device(mlink_handle_data_t *handle_data)
 
     mlink_json_parse(handle_data->req_data, "timeout", &duration_ms);
 
-    ret = mconfig_chain_master(mconfig_data, duration_ms / portTICK_RATE_MS);
+    ret = mconfig_chain_master(mconfig_data, duration_ms / portTICK_PERIOD_MS);
     MDF_ERROR_GOTO(ret != MDF_OK, EXIT, "<%s> Sending network configuration information to the devices",
                    mdf_err_to_name(ret));
 

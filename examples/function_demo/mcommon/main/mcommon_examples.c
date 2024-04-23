@@ -68,7 +68,7 @@ static void info_store_test()
      */
     value = 0;
     MDF_ERROR_ASSERT(mdf_info_load(key, &value, sizeof(uint32_t)));
-    MDF_LOGI("value: %d", value);
+    MDF_LOGI("value: %"PRIu32, value);
 
     /**
      * @brief  Erase the information with given key
@@ -171,7 +171,7 @@ static void event_loop_test()
      */
     MDF_ERROR_ASSERT(mdf_event_loop_init(event_loop_test_cb));
     MDF_ERROR_ASSERT(mdf_event_loop_send(EVENT_TEST, (void *)value));
-    MDF_ERROR_ASSERT(mdf_event_loop_delay_send(EVENT_DELAY_TEST, (void *)value, 1000 / portTICK_RATE_MS));
+    MDF_ERROR_ASSERT(mdf_event_loop_delay_send(EVENT_DELAY_TEST, (void *)value, 1000 / portTICK_PERIOD_MS));
 }
 
 /**

@@ -133,6 +133,27 @@ typedef struct {
 mdf_err_t mupgrade_firmware_init(const char *name, size_t size);
 
 /**
+ * @brief  Initialize the upgrade status but don't erase the upgrade partition. Can be used for repeated
+ *         send of already downloaded firmware so the flash does not need to be rewritten again with same data.
+ *
+ * @attention Only called at the root
+ * @attention Expected app image is validated by its SHA256, which therefore must be provided so the comparison
+ *            between expected and already present update app can be done.
+ *
+ * @param  name Unique identifier of the firmware
+ * @param  size Total length of firmware, MUST BE KNOWN EXACTLY
+ * @param  expected_sha256 Unique sha256 of the App ELF that is located in the image header (0xB0 in bin file),
+ *                         stored as array of 32 bytes
+ *
+ * @return
+ *    - MDF_OK
+ *    - MDF_ERR_INVALID_ARG
+ *    - MDF_ERR_MUPGRADE_FIRMWARE_PARTITION
+ *    - MDF_ERR_MUPGRADE_FIRMWARE_INVALID
+ */
+mdf_err_t mupgrade_firmware_repeat(const char *name, size_t size, const uint8_t* expected_sha256);
+
+/**
  * @brief  Write firmware to flash
  *
  * @attention Only called at the root
@@ -169,7 +190,7 @@ mdf_err_t mupgrade_firmware_download_finished(size_t image_size);
  *    - MDF_OK
  *    - MDF_ERR_MUPGRADE_FIRMWARE_INVALID
  */
-mdf_err_t mupgrade_firmware_check(const esp_partition_t *partition);
+mdf_err_t mupgrade_firmware_check(const esp_partition_t *partition) __attribute__((deprecated("mupgrade_firmware_check is deprecated, use firmware checks from IDF instead")));
 
 /**
  * @brief  Root sends firmware to other nodes

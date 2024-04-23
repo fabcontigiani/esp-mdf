@@ -15,30 +15,44 @@
 #ifndef __MDF_COMMON_H__
 #define __MDF_COMMON_H__
 
+#include "esp_idf_version.h"
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 0, 0)
+#define IDF_V5
+#elif ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(4, 0, 0)
+#define IDF_V4
+#else
+#error "Obsolete ESP-IDF version, unsupported"
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <inttypes.h>
 #include "errno.h"
 #include "sdkconfig.h"
 
 #ifdef CONFIG_IDF_TARGET_ESP32C3
 #include "esp32c3/rom/rtc.h"
 #include "esp32c3/rom/crc.h"
+#include "esp32c3/rom/ets_sys.h"
 #endif
 
 #ifdef CONFIG_IDF_TARGET_ESP32S2
 #include "esp32s2/rom/rtc.h"
 #include "esp32s2/rom/crc.h"
+#include "esp32s2/rom/ets_sys.h"
 #endif
 
 #ifdef CONFIG_IDF_TARGET_ESP32S3
 #include "esp32s3/rom/rtc.h"
 #include "esp32s3/rom/crc.h"
+#include "esp32s3/rom/ets_sys.h"
 #endif
 
 #ifdef CONFIG_IDF_TARGET_ESP32
 #include "esp32/rom/rtc.h"
 #include "esp32/rom/crc.h"
+#include "esp32/rom/ets_sys.h"
 #endif
 
 #include "freertos/FreeRTOS.h"
@@ -52,6 +66,7 @@
 #include "esp_partition.h"
 #include "esp_event.h"
 #include "esp_http_client.h"
+#include "esp_mac.h"
 
 #include "lwip/sockets.h"
 #include "lwip/netdb.h"
