@@ -118,6 +118,12 @@ typedef struct {
     int8_t select_rssi;         /**< RSSI threshold for parent selection. Its value should be greater than switch_rssi */
     int8_t switch_rssi;         /**< RSSI threshold below which a node selects a parent with better RSSI */
     mesh_rssi_threshold_t rssi_threshold; /**< Additional RSSI thresholds used internally by ESP-WIFI-MESH. Recommended to keep defaults. */
+    /* Note to rssi_threshold values:
+     * `esp_err_t esp_mesh_set_rssi_threshold(const mesh_rssi_threshold_t *threshold)` is used to set the RSSI threshold of the current parent. 
+     * And if the parent's rssi is lower than `threshold->low` for a period time of `duration_ms`, then the mesh node will post `MESH_WEAK_RSSI` event.
+     * The `threshold->low`, `threshold->high`, `threshold->medium` also be used when the mesh node want to switch parent, 
+     * they are used to determine whether the new parent and the current parent are in the same rssi range.
+	 */
     uint8_t attempt_count;      /**< Parent selection fail times, if the scan times reach this value,
                                      device will disconnect with associated children and join self-healing */
     uint8_t monitor_ie_count;   /**< Allowed number of changes a parent node can introduce into its information element (IE),
