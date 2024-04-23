@@ -62,6 +62,5 @@ for dir in "${BUILD_DIRS[@]}";
 
 # Following have other requirements, may not be supported:
 #BUILD_DIRS+=("wireless_debug")
-#BUILD_DIRS+=("aliyun_linkkit/get-started" "aliyun_linkkit/mesh-with-aliyun" "aliyun_linkkit/test")
 #BUILD_DIRS+=("development_kit/buddy" "development_kit/button" "development_kit/light" "development_kit/sense")
 

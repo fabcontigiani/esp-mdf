@@ -48,8 +48,6 @@ build_template_make: &build_template
     - ./tools/ci/build_examples_make.sh examples/development_kit/button
 #   - ./tools/ci/build_examples_make.sh examples/development_kit/sense  sense can not build by GNU make in idf release/v4.2(af8bc4c4)
     - ./tools/ci/build_examples_make.sh examples/development_kit/buddy
-    - ./tools/ci/build_examples_make.sh examples/aliyun_linkkit/get-started
-    - ./tools/ci/build_examples_make.sh examples/aliyun_linkkit/mesh-with-aliyun
 
 build_template_cmake: &build_template
   stage: build
@@ -85,10 +83,6 @@ build_template_cmake: &build_template
     - ./tools/ci/build_examples_cmake.sh examples/development_kit/button esp32
     - ./tools/ci/build_examples_cmake.sh examples/development_kit/sense esp32
     - ./tools/ci/build_examples_cmake.sh examples/development_kit/buddy esp32
-    - ./tools/ci/build_examples_cmake.sh examples/aliyun_linkkit/get-started esp32
-    - ./tools/ci/build_examples_cmake.sh examples/aliyun_linkkit/get-started esp32s2
-    - ./tools/ci/build_examples_cmake.sh examples/aliyun_linkkit/mesh-with-aliyun esp32
-    - ./tools/ci/build_examples_cmake.sh examples/aliyun_linkkit/mesh-with-aliyun esp32s2
 
 push_master_to_github:
   stage: deploy
