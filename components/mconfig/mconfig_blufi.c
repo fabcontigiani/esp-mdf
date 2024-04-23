@@ -1116,7 +1116,12 @@ mdf_err_t mconfig_blufi_init(const mconfig_blufi_config_t *cfg)
     ret = esp_bt_controller_enable(ESP_BT_MODE_BLE);
     MDF_ERROR_CHECK(ret != ESP_OK, ret, "Enable bt controller");
 
+#if ESP_IDF_VERSION >= ESP_IDF_VERSION_VAL(5, 2, 0)
+    esp_bluedroid_config_t bluedroid_config = BT_BLUEDROID_INIT_CONFIG_DEFAULT();
+    ret = esp_bluedroid_init_with_cfg(&bluedroid_config);
+#else
     ret = esp_bluedroid_init();
+#endif
     MDF_ERROR_CHECK(ret != ESP_OK, ret, "Initialize bluedroid");
 
     ret = esp_bluedroid_enable();
