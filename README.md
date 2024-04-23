@@ -6,13 +6,25 @@ There is none, unfortunatelly. This is just unofficial fork of ESP-MDF with some
 
 Key motivation was to have WPA3 support using actively maintained IDF version while also keeping IDF v4.4 compatibility for smoother transition of existing projects.
 
+### Main improvements over [official ESP-MDF](https://github.com/espressif/esp-mdf/tree/master)
+
+- **Supports IDF v4.4.x AND v5.x** (official MDF only supports now outdated [IDF v4.3.1](https://github.com/espressif/esp-mdf/tree/master?tab=readme-ov-file#quick-start) ).
+
+- If used with IDF v5.1 or newer, [you can use WPA3](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/mwifi.c#L532) auth in your Wifi Mesh, and you can also [select it in sdkconfig](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/Kconfig#L14) instead of digging in frameworks source files.
+
+- Even with older IDF versions it defaults to [at least WPA2](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/mwifi.c#L535) (as opposed to official MDF with [plain old WPA](https://github.com/espressif/esp-mdf/blob/354d0bf687722570d2c22a71798a72ba17951030/components/mwifi/mwifi.c#L520)).
+
+- Supported targets: `ESP32, ESP32-S2, ESP32-C3` and also `ESP32-S3`. With IDF v5+ it could support even more targets (currently not implemented).
+
+- Various smaller bugfixes and improvements (including disabling mupgrade firmware checks that instead of preventing the CPU lockup does actually cause it to stop running).
+
 ### Matters need attention
 
 1. This version of MDF is **not recommended for product development**, just like the official one (which is now quite obsolete and still defaults to WPA1). 
-1. Care was taken to be somehow compatible with IDF v5+ while maintaining compatibility with latest IDF v4.4 version (v4.4.6/v4.4.7). 
+1. Care was taken to be somehow compatible with IDF v5+ while maintaining compatibility with latest IDF v4.4.x version. 
 1. Testing is very limited and may only consist of building selected examples for some targets.
-    - Test build was performed for `get-started, function_demo/*` examples and `esp32, esp32c3, esp32s3` targets.
-    - Wireless-Debug and all Devkit examples are not tested and considered broken. 
+    - Test build was performed for `get-started, function_demo/*` examples and *esp32, esp32s2, esp32c3, esp32s3* targets.
+    - Wireless-Debug and all Devkit examples were not tested and considered broken in its current state. 
     - Mileage of code running on actual hardware may vary.
 1. Legay make files are kept in original locations and state, not managed and not tested, not expected to work with IDF v5+.
 1. Documentation may reflect original state rather than current state. Localized CN readme was removed to prevent more confusion as I am not able to maintain it.
