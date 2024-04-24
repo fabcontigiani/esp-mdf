@@ -122,7 +122,7 @@ extern "C" {
  *
  * @return constant string from MDF_VER
  */
-//#define MDF_VER	"mdf-as-component"
+//#define MDF_VER	"2.0.0"
 #define mdf_get_version()    MDF_VER
 
 #ifdef __cplusplus
