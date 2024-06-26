@@ -91,6 +91,8 @@ menu "MDF Mcommon"
         bool "Debug"
         config MDF_LOG_LEVEL_VERBOSE
         bool "Verbose"
+        config MDF_LOG_LEVEL_IDF_RUNTIME
+        bool "Same as IDF setting (at runtime)"
         
     endchoice
 
@@ -102,6 +104,7 @@ menu "MDF Mcommon"
         default 3 if MDF_LOG_LEVEL_INFO
         default 4 if MDF_LOG_LEVEL_DEBUG
         default 5 if MDF_LOG_LEVEL_VERBOSE
+        default 15 if MDF_LOG_LEVEL_IDF_RUNTIME
 
         config MDF_DISABLE_MINIZ_COMPONENT_INLCUDES
         bool "Disable MINIZ component includes"

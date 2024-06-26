@@ -21,12 +21,13 @@ Key motivation was to have WPA3 support using actively maintained IDF version wh
 ### Matters need attention
 
 1. This version of MDF is **not recommended for product development**, just like the official one (which is now quite obsolete and still defaults to WPA1). 
+1. **Make sure you read release notes for v2.0.0** https://github.com/mmrein/esp-mdf/releases/tag/v2.0.0 if you are updating from original ESP-MDF. Especially the breaking changes, where minimum WPA2 auth mode will affect most users.
 1. Care was taken to be somehow compatible with IDF v5+ while maintaining compatibility with latest IDF v4.4.x version. 
 1. Testing is very limited and may only consist of building selected examples for some targets.
     - Test build was performed for `get-started, function_demo/*` examples and *esp32, esp32s2, esp32c3, esp32s3* targets.
     - Wireless-Debug and all Devkit examples were not tested and considered broken in its current state. 
     - Mileage of code running on actual hardware may vary.
-1. Legay make files are kept in original locations and state, not managed and not tested, not expected to work with IDF v5+.
+1. Legacy make files are kept in original locations and state, not managed and not tested, not expected to work with IDF v5+.
 1. Documentation may reflect original state rather than current state. Localized CN readme was removed to prevent more confusion as I am not able to maintain it.
 
 ----

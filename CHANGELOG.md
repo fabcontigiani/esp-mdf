@@ -2,6 +2,13 @@
 
 # ESP-MDF Changelog
 
+## v2.1.0-dev (25.06.2024)
+
+### Features
+
+- **mcommon:** Added Kconfig option `MDF_LOG_LEVEL_IDF_RUNTIME`, which makes MDF log level adjustable at runtime (using `esp_log_level_set("*", log_level)` so it is also the same as global system setting). Older options work as they did before - set static log level for MDF at build time, possibly making ouptut binary smaller.
+
+
 ## v2.0.0 (24.04.2024)
 
 ### Possibly breaking changes

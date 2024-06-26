@@ -71,7 +71,11 @@ const char *mdf_err_to_name(mdf_err_t code);
 #ifndef CONFIG_MDF_LOG_LEVEL
 #define CONFIG_MDF_LOG_LEVEL ESP_LOG_DEBUG
 #endif /**< CONFIG_MDF_LOG_LEVEL */
+#ifdef CONFIG_MDF_LOG_LEVEL_IDF_RUNTIME
+#define MDF_LOG_LEVEL esp_log_level_get("*")
+#else
 #define MDF_LOG_LEVEL CONFIG_MDF_LOG_LEVEL
+#endif
 
 #define MDF_LOG_FORMAT(letter, format)  LOG_COLOR_ ## letter #letter " (%"PRIu32") [%s, %d]: " format LOG_RESET_COLOR "\n"
 
