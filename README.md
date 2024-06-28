@@ -196,10 +196,7 @@ cd  get-started/
 cp -r $MDF_PATH/components .
 ```
 
-3. Uncomment `#define MDF_VER` macro in `mcommon/include/mdf_common.h`
-
-- Find out current MDF version from git: `git -C $MDF_PATH describe`
-- Copy the result and paste it as string value of MDF_VER macro (towards the end of file)
+3. Uncomment `#define MDF_VER` macro in `mcommon/include/mdf_common.h`. It should have correct version prefilled.
   
 ```shell
 nano mcommon/include/mdf_common.h
