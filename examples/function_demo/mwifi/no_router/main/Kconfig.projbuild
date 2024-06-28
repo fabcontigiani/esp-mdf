@@ -36,6 +36,12 @@ config MESH_CHANNEL
     default 11
     help
         Mesh network channel.
+        
+config MESH_PASSWORD
+    string "Mesh Password"
+    default "MESH_PASSWORD"
+    help
+        Mesh AP password. Password length must be 8 bits smaller than 64 bits,Set to null to not encrypt
 
 config UART_PORT_NUM
     int "UART PORT NUM"

@@ -271,9 +271,11 @@ void app_main()
 {
     mwifi_init_config_t cfg = MWIFI_INIT_CONFIG_DEFAULT();
     mwifi_config_t config   = {
-        .channel   = CONFIG_MESH_CHANNEL,
-        .mesh_id   = CONFIG_MESH_ID,
+        .mesh_id = CONFIG_MESH_ID,
+        .mesh_password = CONFIG_MESH_PASSWORD,
         .mesh_type = CONFIG_DEVICE_TYPE,
+        .channel = CONFIG_MESH_CHANNEL,
+		.auth_mode = CONFIG_MWIFI_AUTH_MODE,
     };
 
     /**
