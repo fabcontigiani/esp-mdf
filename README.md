@@ -10,7 +10,7 @@ Key motivation was to have WPA3 support using actively maintained IDF version wh
 
 - **Supports IDF v4.4.x AND v5.x** (official MDF only supports now outdated [IDF v4.3.1](https://github.com/espressif/esp-mdf/tree/master?tab=readme-ov-file#quick-start) ).
 
-- If used with IDF v5.1 or newer, [you can use WPA3](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/mwifi.c#L532) auth in your Wifi Mesh, and you can also [select it in sdkconfig](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/Kconfig#L14) instead of digging in frameworks source files.
+- If used with IDF v5.1 or newer, [you could use WPA3](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/mwifi.c#L532) auth in your Wifi Mesh, and you can also [select it in sdkconfig](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/Kconfig#L14) instead of digging in frameworks source files. **Note:** WPA3 still not possible as underlying ESP-WIFI-MESH does not actually support it, see https://github.com/espressif/esp-idf/issues/14095.
 
 - Even with older IDF versions it defaults to [at least WPA2](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/mwifi.c#L535) (as opposed to official MDF with [plain old WPA](https://github.com/espressif/esp-mdf/blob/354d0bf687722570d2c22a71798a72ba17951030/components/mwifi/mwifi.c#L520)).
 

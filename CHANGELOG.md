@@ -2,18 +2,19 @@
 
 # ESP-MDF Changelog
 
-## v2.1.0-dev (25.06.2024)
+## v2.1.0 (28.06.2024)
 
 ### Features
 
-- **mcommon:** Added Kconfig option `MDF_LOG_LEVEL_IDF_RUNTIME`, which makes MDF log level adjustable at runtime (using `esp_log_level_set("*", log_level)` so it is also the same as global system setting). Older options work as they did before - set static log level for MDF at build time, possibly making ouptut binary smaller.
+- **mcommon:** Added Kconfig option `MDF_LOG_LEVEL_IDF_RUNTIME`, which makes MDF log level adjustable at runtime (using `esp_log_level_set("*", log_level)` so it is also the same as global system setting). Older options work as they did before - set static log level for MDF at build time, possibly making output binary smaller. [4c19fdd](https://github.com/mmrein/esp-mdf/commit/4c19fdd1e0d20198f0d6f645596c8f695bcbb5b5)
+- Updated examples: function_demo/mwifi/no_router, root_on_ethernet [a89577b](https://github.com/mmrein/esp-mdf/commit/a89577bb98e67b3758bee6976e2d1fe99292739f)
 
 
 ## v2.0.0 (24.04.2024)
 
 ### Possibly breaking changes
 
-- Add option to select WPA2 or WPA3 as mwifi auth mode, add auth_mode to mwifi_config_t struct. Minimum auth mode is now WPA2. WPA3 requires ESP-IDF v5.1+. [6e5399e](https://github.com/mmrein/esp-mdf/commit/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6)
+- Add option to select WPA2 or WPA3 as mwifi auth mode, add auth_mode to mwifi_config_t struct. Minimum auth mode is now WPA2. WPA3 requires ESP-IDF v5.1+. [6e5399e](https://github.com/mmrein/esp-mdf/commit/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6). **Note:** WPA3 still not possible as underlying ESP-WIFI-MESH does not actually support it, see https://github.com/espressif/esp-idf/issues/14095.
 - Remove [problematic mupgrade firmware checks](https://github.com/espressif/esp-mdf/issues/303). It is recommended to use IDF builtin firmware checks and version fallback mechanisms instead. ([25e953a](https://github.com/mmrein/esp-mdf/commit/25e953a802438d5493fd8e1047a1e026df3f44d9) and [f4e8aea](https://github.com/mmrein/esp-mdf/commit/f4e8aea5ccbc11ed4e912b6b0127b7396e167536))
 - Fix rssi threshoud vs threshold typos in mwifi, moved thresholds config to mwifi_init_config_t [b6c57a4](https://github.com/mmrein/esp-mdf/commit/b6c57a4205a3c75d7c52e9f9028eb8eac4718918)
 - Removed Aliyun examples and components to simplify maintainability [2b5b61e](https://github.com/mmrein/esp-mdf/commit/2b5b61e958ed310eea908376e754fd363445882a)
