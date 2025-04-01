@@ -14,7 +14,8 @@
 
 ### Possibly breaking changes
 
-- Add option to select WPA2 or WPA3 as mwifi auth mode, add auth_mode to mwifi_config_t struct. Minimum auth mode is now WPA2. WPA3 requires ESP-IDF v5.1+. [6e5399e](https://github.com/mmrein/esp-mdf/commit/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6). **Note:** WPA3 still not possible as underlying ESP-WIFI-MESH does not actually support it, see https://github.com/espressif/esp-idf/issues/14095.
+- Add option to select WPA2 or WPA3 as mwifi auth mode, add auth_mode to mwifi_config_t struct. Minimum auth mode is now WPA2. WPA3 requires ESP-IDF v5+ (see note below). [6e5399e](https://github.com/mmrein/esp-mdf/commit/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6).
+> ***Note:** Fix for WPA3 (see [IDF issue #14095](https://github.com/espressif/esp-idf/issues/14095)) has been added in following IDF releases: **v5.4.1, v5.3.?, v5.2.4, v5.1.6, v5.0.?** (v5.3 and v5.0 bugfixes not released yet at the time of writing).*
 - Remove [problematic mupgrade firmware checks](https://github.com/espressif/esp-mdf/issues/303). It is recommended to use IDF builtin firmware checks and version fallback mechanisms instead. ([25e953a](https://github.com/mmrein/esp-mdf/commit/25e953a802438d5493fd8e1047a1e026df3f44d9) and [f4e8aea](https://github.com/mmrein/esp-mdf/commit/f4e8aea5ccbc11ed4e912b6b0127b7396e167536))
 - Fix rssi threshoud vs threshold typos in mwifi, moved thresholds config to mwifi_init_config_t [b6c57a4](https://github.com/mmrein/esp-mdf/commit/b6c57a4205a3c75d7c52e9f9028eb8eac4718918)
 - Removed Aliyun examples and components to simplify maintainability [2b5b61e](https://github.com/mmrein/esp-mdf/commit/2b5b61e958ed310eea908376e754fd363445882a)
