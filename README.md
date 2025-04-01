@@ -1,8 +1,8 @@
 # ESP-WIFI-MESH Development Framework
 
-### If you are looking for actively maintained repository for ESP-MDF, THIS IS NOT IT. 
+### If you are looking for actively maintained repository for ESP-MDF, THIS IS NOT IT. There is none, unfortunatelly. 
 
-There is none, unfortunatelly. This is just unofficial fork of ESP-MDF with some basic patches and ESP-IDF v5+ support. 
+This is just unofficial fork of ESP-MDF with some patches, ESP-IDF v5+ and WPA3 support. 
 
 Key motivation was to have WPA3 support using actively maintained IDF version while also keeping IDF v4.4 compatibility for smoother transition of existing projects.
 
@@ -10,17 +10,19 @@ Key motivation was to have WPA3 support using actively maintained IDF version wh
 
 - **Supports IDF v4.4.x AND v5.x** (official MDF only supports now outdated [IDF v4.3.1](https://github.com/espressif/esp-mdf/tree/master?tab=readme-ov-file#quick-start) ).
 
-- If used with IDF v5.1 or newer, [you could use WPA3](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/mwifi.c#L532) auth in your Wifi Mesh, and you can also [select it in sdkconfig](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/Kconfig#L14) instead of digging in frameworks source files. **Note:** WPA3 still not possible as underlying ESP-WIFI-MESH does not actually support it, see https://github.com/espressif/esp-idf/issues/14095.
+- **Supports WPA3** [WiFi auth](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/mwifi.c#L532) if used with **IDF v5.4.1** or newer. You can also [select it in sdkconfig](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/Kconfig#L14) instead of digging in frameworks source files.
+
+    - *Note: Fix for WPA3 in ESP-WIFI-MESH (and also MDF), tracked in [IDF issue #14095](https://github.com/espressif/esp-idf/issues/14095), has been added in following IDF releases: **v5.4.1, v5.3.?, v5.2.4, v5.1.6, v5.0.?** (v5.3 and v5.0 bugfixes not released yet at the time of writing).*
 
 - Even with older IDF versions it defaults to [at least WPA2](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/mwifi.c#L535) (as opposed to official MDF with [plain old WPA](https://github.com/espressif/esp-mdf/blob/354d0bf687722570d2c22a71798a72ba17951030/components/mwifi/mwifi.c#L520)).
 
 - Supported targets: `ESP32, ESP32-S2, ESP32-C3` and also `ESP32-S3`. With IDF v5+ it could support even more targets (currently not implemented).
 
-- Various smaller bugfixes and improvements (including disabling mupgrade firmware checks that instead of preventing the CPU lockup does actually cause it to stop running).
+- Various smaller bugfixes and improvements (including disabling mupgrade firmware checks that instead of preventing the CPU lockup does actually cause the CPU to stop running).
 
 ### Matters need attention
 
-1. This version of MDF is **not recommended for product development**, just like the official one (which is now quite obsolete and still defaults to WPA1). 
+1. This version of MDF is **not recommended for product development**, just like the official one (which is now quite obsolete and still defaults to WPA1 btw). 
 1. **Make sure you read release notes for v2.0.0** https://github.com/mmrein/esp-mdf/releases/tag/v2.0.0 if you are updating from original ESP-MDF. Especially the breaking changes, where minimum WPA2 auth mode will affect most users.
 1. Care was taken to be somehow compatible with IDF v5+ while maintaining compatibility with latest IDF v4.4.x version. 
 1. Testing is very limited and may only consist of building selected examples for some targets.
@@ -34,7 +36,7 @@ Key motivation was to have WPA3 support using actively maintained IDF version wh
 
 ## Overview
 
-ESP-MDF, or Espressif Mesh Development Framework, is a development framework for [ESP-WIFI-MESH](https://docs.espressif.com/projects/esp-idf/en/v4.4.7/esp32/api-guides/esp-wifi-mesh.html), a networking protocol built on top of the Wi-Fi protocol. ESP-MDF is based on the [ESP32](https://www.espressif.com/en/products/hardware/esp32/overview) chip. ESP-MDF provides the following features:
+ESP-MDF, or Espressif Mesh Development Framework, is a development framework for [ESP-WIFI-MESH](https://docs.espressif.com/projects/esp-idf/en/v4.4.6/esp32/api-guides/esp-wifi-mesh.html), a networking protocol built on top of the Wi-Fi protocol. ESP-MDF is based on the [ESP32](https://www.espressif.com/en/products/hardware/esp32/overview) chip. ESP-MDF provides the following features:
 
 - **Fast network configuration**: In addition to manual configuration with the network configuration apps, such as ESP-WIFI-MESH App or similar third-party apps, ESP-MDF offers a chained way of network configuration, during which devices autonomously and quickly establish a network, and form a greater coverage area.
 
@@ -100,7 +102,8 @@ ESP-MDF consists of Utils, Components and Examples (see the below figure). Utils
 1. Use [Function demo](examples/function_demo/) for your project development
 1. When you encounter problems in development - lets be real here - you are probably on your own.
     - There is [forum](https://esp32.com/viewforum.php?f=21&sid=27bd50a0e45d47b228726ee55437f57e) and [official issues](https://github.com/espressif/esp-mdf/issues) where you can search for existing problems.
-    - If there is no such problem, you could - in theory - try asking, but you will most likely only get tony's *message delivered* confirmation.
+    - If there is no such problem, you could post an issue in official MDF, but you will most likely only get tony's *message delivered* confirmation.
+    - You may try asking here too, but it will likely get even less traction here and my support will be very limited.
 
 ## Quick Start
 
@@ -254,8 +257,8 @@ include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 ## Related Documentation
 
 * For ESP-MDF related documents, please go to [ESP-MDF Programming Guide](https://docs.espressif.com/projects/esp-mdf/en/latest/?badge=latest).
-* [ESP-WIFI-MESH](https://docs.espressif.com/projects/esp-idf/en/v4.4.7/esp32/api-guides/esp-wifi-mesh.html) is the basic wireless communication protocol for ESP-MDF.
-* [ESP-IDF Programming Guide](https://docs.espressif.com/projects/esp-idf/en/v4.4.7/esp32/api-guides/esp-wifi-mesh.html) describes Espressif's IoT development framework.
+* [ESP-WIFI-MESH](https://docs.espressif.com/projects/esp-idf/en/v4.4.6/esp32/api-guides/esp-wifi-mesh.html) is the basic wireless communication protocol for ESP-MDF.
+* [ESP-IDF Programming Guide](https://docs.espressif.com/projects/esp-idf/en/v4.4.6/esp32/api-guides/esp-wifi-mesh.html) describes Espressif's IoT development framework.
 * To visit ESP32 official forum, please go to [ESP32 BBS](https://esp32.com/).
 * For the hardware documents related to ESP32-MeshKit, please visit [Espressif Website](https://www.espressif.com/en/support/documents/technical-documents).
 
