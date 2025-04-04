@@ -202,7 +202,7 @@ cp -r $MDF_PATH/components .
 3. Uncomment `#define MDF_VER` macro in `mcommon/include/mdf_common.h`. It should have correct version prefilled.
   
 ```shell
-nano mcommon/include/mdf_common.h
+nano components/mcommon/include/mdf_common.h
 ```
 
 4. Edit project's CMakeLists.txt by removing `MDF_PATH` references and using standard IDF path instead
