@@ -2,6 +2,12 @@
 
 # ESP-MDF Changelog
 
+## v2.2.0-dev1 (09.04.2025) - Work-In-Progress
+
+- Made MDF build system obsolete, default is to use IDF build with MDF as components
+
+
+
 ## v2.1.0 (28.06.2024)
 
 ### Features

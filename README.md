@@ -12,7 +12,7 @@ Key motivation was to have WPA3 support using actively maintained IDF version wh
 
 - **Supports WPA3** [WiFi auth](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/mwifi.c#L532) if used with **IDF v5.4.1** or newer. You can also [select it in sdkconfig](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/Kconfig#L14) instead of digging in frameworks source files.
 
-> ***Note:** Fix for WPA3 (see [IDF issue #14095](https://github.com/espressif/esp-idf/issues/14095)) has been added in following IDF releases: **v5.4.1, v5.3.?, v5.2.4, v5.1.6, v5.0.?** (v5.3 and v5.0 bugfixes not released yet at the time of writing).*
+> ***Note:** Fix for WPA3 (see [IDF issue #14095](https://github.com/espressif/esp-idf/issues/14095)) has been added in following IDF releases: **v5.4.1, v5.3.3, v5.2.4, v5.1.6, v5.0.9** (v5.3.3 and v5.0.9 bugfixes not released yet at the time of writing).*
 
 - Even with older IDF versions it defaults to [at least WPA2](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/mwifi.c#L535) (as opposed to official MDF with [plain old WPA](https://github.com/espressif/esp-mdf/blob/354d0bf687722570d2c22a71798a72ba17951030/components/mwifi/mwifi.c#L520)).
 
@@ -111,6 +111,15 @@ This section provides the steps for quick start with your development of ESP-MDF
 
 The directory ``~/esp`` will be used further to install the compiling toolchain, ESP-MDF and demo programs. You can use another directory, but make sure to modify the commands accordingly.
 
+### TL;DR
+
+1. Setup [ESP-IDF](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/index.html#installation) of your choice as ussual
+2. Clone this repo: `git clone https://github.com/mmrein/esp-mdf.git`
+3. Copy some MDF example project (get-started) to your working directory or create a new IDF project
+4. Copy `components` directory from MDF cloned repo to your project
+5. Build as regular IDF project, with MDF as components
+
+
 ### 1. Setup Prerequisites
 
 #### 1.A Toolchain setup
@@ -121,6 +130,9 @@ If you use linux, you can use following commands (example).
 
 ```shell
 git clone -b v4.4.6 --recursive https://github.com/espressif/esp-idf.git
+# or
+git clone -b v5.4.1 --recursive https://github.com/espressif/esp-idf.git
+
 cd ~/esp/esp-idf
 ./install.sh
 . ./export.sh
@@ -131,10 +143,8 @@ cd ~/esp/esp-idf
 Clone this repo:
 
 ```shell
-git clone --recursive https://github.com/mmrein/esp-mdf.git
+git clone https://github.com/mmrein/esp-mdf.git
 ```
-
-> If you clone without the `--recursive` option, please navigate to the esp-mdf directory and run the command `git submodule update --init`
 
 #### 1.C Update ESP-MDF
 
@@ -143,42 +153,14 @@ In case you wish to update the the ESP-MDF to newest version
 ```shell
 cd ~/esp/esp-mdf
 git pull
-git submodule update --init --recursive
 ```
 
 ### 2. Actual setup
-
-#### 2. Option A: Using ESP_MDF environment variable (default option)
-
-1. Set up ESP-MDF Path:
-
-Toolchain uses the environment variable `MDF_PATH` to access ESP-MDF. The setup of this variable is similar to that of the variable `IDF_PATH`. Please refer to [Set up the Environment Variables](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/linux-macos-setup.html#step-4-set-up-the-environment-variables) guide. If you use linux, you can use this commands.
-
-```shell
-cd ~/esp/esp-mdf
-export MDF_PATH=~/esp/esp-mdf
-```
-
-2. Start a Project:
-
-```shell
-cp -r $MDF_PATH/examples/get-started/ .
-cd  get-started/
-```
-
-3. Build and Flash:
-
-For the rest, just keep the default configuration untouched.
-
-```shell
-idf.py menuconfig
-idf.py -p [port] -b [baudrate] erase_flash flash
-```
     
-#### 2. Option B: Don't use MDF build system at all (and play it safe in long run)
+#### 2. Option A (recommended): Use default ESP-IDF build system with MDF as components
 
-MDF build system is working quite well from terminal, but using Espressif's IDE's may be tricky as MDF is not really supported anymore.
-Therefore the safer option is to use the project **as any other regular ESP-IDF project**, without ESP-MDF build system. 
+MDF build may be working from terminal, but using with Espressif's IDE's may be tricky as MDF is not really supported anymore.
+Therefore the safer option is to use the project **as any other regular ESP-IDF project**, without ESP-MDF build system, simply by copying MDF components to your project's `components` subdirectory. 
 
 0. (Optional) Set-up MDF_PATH temporarily just to follow this example 1:1
 
@@ -193,38 +175,68 @@ cp -r $MDF_PATH/examples/get-started/ .
 cd  get-started/
 ```
 
-2. Copy contents of `$MDF_PATH/components` directory to your project's `componnets` directory
+2. Copy contents of `$MDF_PATH/components` directory to your project's `componets` directory
 
 ```shell
 cp -r $MDF_PATH/components .
 ```
 
-3. Uncomment `#define MDF_VER` macro in `mcommon/include/mdf_common.h`. It should have correct version prefilled.
+> Depending on you project's requirements you may only need some of the MDF components. `mcommon` is always required.
+
+3. Voila, you can now build the MDF-based project using standard ESP-IDF build setup with ESP-IDE of your choice.
+
+
+#### 2. Option B (obsolete): Using ESP_MDF environment variable
+
+> Left for reference, this option is now not tested and may not be working anymore.
+
+1. Set up ESP-MDF Path:
+
+Toolchain uses the environment variable `MDF_PATH` to access ESP-MDF. The setup of this variable is similar to that of the variable `IDF_PATH`. Please refer to [Set up the Environment Variables](https://docs.espressif.com/projects/esp-idf/en/stable/esp32/get-started/linux-macos-setup.html#step-4-set-up-the-environment-variables) guide. If you use linux, you can use this commands.
+
+```shell
+cd ~/esp/esp-mdf
+export MDF_PATH=~/esp/esp-mdf
+```
+
+2. Comment out `//#define MDF_VER` macro in `mcommon/include/mdf_common.h`
   
 ```shell
 nano components/mcommon/include/mdf_common.h
 ```
 
-4. Edit project's CMakeLists.txt by removing `MDF_PATH` references and using standard IDF path instead
+3. Edit project's CMakeLists.txt by adding `MDF_PATH` references 
 
 Replace:
-
-```
-if(NOT DEFINED ENV{MDF_PATH})
-    set(ENV{MDF_PATH} ${CMAKE_CURRENT_LIST_DIR}/../..)
-endif()
-include($ENV{MDF_PATH}/project.cmake)
-```
-
-With:
 
 ```
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 ```
 
-5. Voila, you can now build the MDF-based project using standard ESP-IDF build setup.
+With:
 
-> These steps may seem more complicated, but you will likely see that it is overall more reliable and versatile approach to building your project based on ESP-MDF.
+```
+if(NOT DEFINED ENV{MDF_PATH})
+    set(ENV{MDF_PATH} ${CMAKE_CURRENT_LIST_DIR}/../../..)
+endif()
+include($ENV{MDF_PATH}/project.cmake)
+```
+
+4. Start a Project:
+
+```shell
+cp -r $MDF_PATH/examples/get-started/ .
+cd  get-started/
+```
+
+5. Build and Flash:
+
+For the rest, just keep the default configuration untouched.
+
+```shell
+idf.py menuconfig
+idf.py -p [port] -b [baudrate] erase_flash flash
+```
 
 
 ## ESP-WIFI-MESH Highlights
