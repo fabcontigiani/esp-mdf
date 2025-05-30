@@ -12,7 +12,7 @@ Key motivation was to have WPA3 support using actively maintained IDF version wh
 
 - **Supports WPA3** [WiFi auth](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/mwifi.c#L532) if used with **IDF v5.4.1** or newer. You can also [select it in sdkconfig](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/Kconfig#L14) instead of digging in frameworks source files.
 
-> ***Note:** Fix for WPA3 (see [IDF issue #14095](https://github.com/espressif/esp-idf/issues/14095)) has been added in following IDF releases: **v5.4.1, v5.3.3, v5.2.4, v5.1.6, v5.0.9** (v5.3.3 and v5.0.9 bugfixes not released yet at the time of writing).*
+> ***Note:** Fix for WPA3 (see [IDF issue #14095](https://github.com/espressif/esp-idf/issues/14095)) has been added in following IDF releases: **v5.4.1, v5.3.3, v5.2.4, v5.1.6**.*
 
 - Even with older IDF versions it defaults to [at least WPA2](https://github.com/mmrein/esp-mdf/blob/6e5399e60c5deeb4beaa77c8815c4dbb2426aab6/components/mwifi/mwifi.c#L535) (as opposed to official MDF with [plain old WPA](https://github.com/espressif/esp-mdf/blob/354d0bf687722570d2c22a71798a72ba17951030/components/mwifi/mwifi.c#L520)).
 
