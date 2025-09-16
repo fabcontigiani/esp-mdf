@@ -135,7 +135,7 @@ static mdf_err_t mlink_sniffer_list_insert(const mlink_sniffer_data_t *sniffer_d
                                      sniffer_node->data.size - 1, &addr_len);
 
         if (!sniffer_node_addr) {
-            esp_log_buffer_hex(TAG, sniffer_node->data.data, sniffer_node->data.size);
+            ESP_LOG_BUFFER_HEX(TAG, sniffer_node->data.data, sniffer_node->data.size);
         }
 
         MDF_ERROR_BREAK(!sniffer_node_addr, "ltv_data_get, ret: %p", sniffer_node_addr);
