@@ -924,8 +924,8 @@ mdf_err_t mlink_httpd_start(void)
     MDF_LOGD("HTTP port         : %d", config.server_port);
     MDF_LOGD("Max URI handlers  : %d", config.max_uri_handlers);
     MDF_LOGD("Max open sessions : %d", config.max_open_sockets);
-    MDF_LOGD("Max header length : %d", HTTPD_MAX_REQ_HDR_LEN);
-    MDF_LOGD("Max URI length    : %d", HTTPD_MAX_URI_LEN);
+    MDF_LOGD("Max header length : %d", CONFIG_HTTPD_MAX_REQ_HDR_LEN);
+    MDF_LOGD("Max URI length    : %d", CONFIG_HTTPD_MAX_URI_LEN);
     MDF_LOGD("Max stack size    : %d", config.stack_size);
 
     if (!g_mlink_queue) {
