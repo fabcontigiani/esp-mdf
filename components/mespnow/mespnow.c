@@ -94,10 +94,9 @@ static uint8_t g_espnow_queue_size[MESPNOW_TRANS_PIPE_MAX] = {CONFIG_MESPNOW_TRA
 static uint32_t g_last_magic[MESPNOW_TRANS_PIPE_MAX]       = {0};
 
 /**< callback function of sending ESPNOW data */
-static void mespnow_send_cb(const uint8_t *addr, esp_now_send_status_t status)
-{
-    if (!addr) {
-        MDF_LOGW("Send cb args error, addr is NULL");
+static void mespnow_send_cb(const wifi_tx_info_t *info, esp_now_send_status_t status){
+    if (!info) {
+        MDF_LOGW("Send cb args error, info is NULL");
         return;
     }
 
